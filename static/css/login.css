@@ -1,0 +1,27 @@
+.container {
+    max-width: 400px;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+    position: relative;
+}
+button {
+    width: 100%;
+    margin-top: 1rem;
+    font-weight: bold;
+    padding: 0.75rem;
+    border-radius: 5px;
+    background-color: #4e54c8;
+    border: none;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+.footer {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666666;
+}
+

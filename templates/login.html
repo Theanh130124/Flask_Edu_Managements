@@ -1,0 +1,39 @@
+{% extends "layout/base.html" %}
+
+{% block additional_css %}
+<!-- CSS riêng cho login -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="header">
+        <a href="#">
+            <i class="fa-solid fa-language"></i>
+            English
+        </a>
+        <h2 class="mt-4 mb-5">ĐĂNG NHẬP</h2>
+    </div>
+
+    <form method="post" action="/login">
+        <div class="form-floating mt-auto mb-auto">
+            <label for="username">Tên đăng nhập</label>
+            <input type="text" class="form-control" id="username" placeholder="Họ tên" name="username">
+        </div>
+
+        <div class="form-floating mt-auto mb-auto">
+            <label class="mt-3" for="password">Mật khẩu</label>
+            <input type="password" class="form-control mb-4" id="password" placeholder="Mật khẩu" name="password">
+            <button type="submit" class="btn btn-primary mt-4">Đăng Nhập</button>
+        </div>
+
+    </form>
+
+    <div class="footer mt-4">
+        <p>Nếu bạn chưa có tài khoản? <a href="#">Vui lòng liên hệ </a> với phòng
+            quản lý đào
+            tạo nhà trường </p>
+    </div>
+</div>
+{% endblock %}
