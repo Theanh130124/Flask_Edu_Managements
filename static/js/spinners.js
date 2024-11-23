@@ -4,7 +4,7 @@
 //        // Hiển thị spinner khi trang tải
 //        spinnerOverlay.style.display = "flex";
 //
-//        // Ẩn spinner sau 2 giây (hoặc bạn có thể điều chỉnh thời gian)
+////      Fix thời gian spinners
 //        setTimeout(function () {
 //            spinnerOverlay.style.display = "none";
 //        }, 2000);  // Thời gian (2 giây)

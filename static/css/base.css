@@ -1,35 +1,41 @@
-body {
-    background: linear-gradient(to right, #08a9e6, #0165d9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
+body{
+font-family: Arial, sans-serif;
 }
-.container:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+.form-control.is-invalid {
+border-color: #dc3545;
+padding-right: calc(1.5em + .75rem);
+background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
+background-repeat: no-repeat;
+background-position: right calc(.375em + .1875rem) center;
+background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
-h2 {
-    text-align: center;
-    color: #efc30c;
-    margin-bottom: 1.6rem;
-    font-weight: bold;
 
+.invalid-feedback {
+display: none;
+width: 100%;
+margin-top: .25rem;
+font-size: 80%;
+color: #dc3545;
+}
 
+.form-control.is-invalid ~ .invalid-feedback {
+display: block;
 }
-form {
-    display: flex;
-    flex-direction: column;
+.nav-item:hover {
+background-color: #aaaaaa4c;
+border-bottom: solid 1px white;
+border-radius: 3px;
 }
-button:hover {
-    background-color: #3b41a1;
+
+.icon-header:hover {
+background-color: #aaaaaa4c;
+border-radius: 50%;
 }
-.form-control {
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    transition: all 0.3s ease;
+.header{
+background: linear-gradient(to right, #08a9e6, #0165d9);
 }
-.form-control:focus {
-    border-color: #4e54c8;
-    box-shadow: 0 0 8px rgba(78, 84, 200, 0.2);
+
+.footer_home{
+background: linear-gradient(to right, #08a9e6, #0165d9);
 }
+

@@ -1,0 +1,39 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+    QUẢN LÝ HỌC SINH
+{% endblock %}
+{% block content %}
+    <div class="container  text-center">
+        <h1 class="display-5 fw-bold">Chào mừng</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Các thông báo sẽ được cập nhật tại đây.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Cập nhật thông báo</button>
+            </div>
+            <h2 class="display-6 fw-bold text-center mt-5 mb-5">Thông báo hôm nay</h2>
+        </div>
+    </div>
+    <div class="container ">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+
+                            <div class="content">
+
+                            </div>
+                        </div>
+                        <div class="text-end px-3 pb-1">
+
+                            <p class="align-text-bottom m-0">
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+{% endblock %}
