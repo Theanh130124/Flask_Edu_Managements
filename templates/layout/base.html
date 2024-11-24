@@ -22,63 +22,69 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <!-- Thêm CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <!-- Thêm JS Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
 </head>
 <body>
 <!-- {#header#} -->
 {% block header %}
-    {% include 'layout/header.html' %}
+{% include 'layout/header.html' %}
 {% endblock %}
 <!-- {#nav-content#} -->
 {% block nav_content %}
-    <div class="container-fluid">
-        <div class="row flex-nowrap " style="color: #000;">
-            <div class="col-auto col-md-3 col-xl-2 header">
-                <div class="d-flex flex-column align-items-center align-items-sm-start text-white min-vh-100" style="margin-top: 10px ">
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start "
-                        id="menu" >
-                        <li class="nav-item w-100 my-3">
-                            <a href="/" class="nav-link align-middle text-white " style="font-size: 20px;">
-                               <i class="fa-solid fa-house"></i> Trang chủ
-                            </a>
-                        </li>
-                        <li class="nav-item w-100 my-3">
-                            <a href="/student/register" class="nav-link align-middle text-white" style="font-size: 20px;">
-                              <i class="fa-solid fa-pen"></i> Tiếp nhận học sinh
-                            </a>
-                        </li>
+<div class="container-fluid">
+    <div class="row flex-nowrap " style="color: #000;">
+        <div class="col-auto col-md-3 col-xl-2 header">
+            <div class="d-flex flex-column align-items-center align-items-sm-start text-white min-vh-100"
+                 style="margin-top: 10px ">
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start "
+                    id="menu">
+                    <li class="nav-item w-100 my-3">
+                        <a href="/home" class="nav-link align-middle text-white " style="font-size: 16px;">
+                            <i class="fa-solid fa-house"></i> Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item w-100 my-3">
+                        <a href="/student/register" class="nav-link align-middle text-white" style="font-size: 16px;">
+                            <i class="fa-solid fa-pen"></i> Tiếp nhận học sinh
+                        </a>
+                    </li>
 
-                            <li class="nav-item w-100 my-3">
-                            <a href="/grade" class="nav-link align-middle text-white" style="font-size: 20px;">
-                                <i class="fa-solid fa-plus"></i> Thêm điểm môn học
-                            </a>
+                    <li class="nav-item w-100 my-3">
+                        <a href="/grade" class="nav-link align-middle text-white" style="font-size: 16px;">
+                            <i class="fa-solid fa-plus"></i> Thêm điểm môn học
+                        </a>
 
-                        </li>
-                        <li class="nav-item w-100 my-3">
-                            <a href="/class/edit" class="nav-link align-middle text-white" style="font-size: 20px;">
-                              <i class="fa-solid fa-wrench"></i> Chỉnh sửa thông tin lớp học
-                            </a>
-                        </li>
+                    </li>
+                    <li class="nav-item w-100 my-3">
+                        <a href="/class/edit" class="nav-link align-middle text-white" style="font-size: 16px;">
+                            <i class="fa-solid fa-wrench"></i> Chỉnh sửa thông tin lớp học
+                        </a>
+                    </li>
 
-                        <li class="nav-item w-100 my-3">
-                            <a href="/regulations" class="nav-link align-middle text-white" style="font-size: 20px;">
-                               <i class="fa-solid fa-circle-info"></i> Quy định nhà trường
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- {#content#} -->
-            <div class="col py-3">
-                {% block content %}{% endblock %}
+                    <li class="nav-item w-100 my-3">
+                        <a href="/regulations" class="nav-link align-middle text-white" style="font-size: 16px;">
+                            <i class="fa-solid fa-circle-info"></i> Quy định nhà trường
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
+        <!-- {#content#} -->
+        <div class="col py-3">
+            {% block content %}{% endblock %}
+        </div>
     </div>
+</div>
 {% endblock %}
 <!-- {#footer#} -->
 {% block footer %}
-    {% include 'layout/footer.html' %}
+{% include 'layout/footer.html' %}
 {% endblock %}
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

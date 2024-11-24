@@ -1,16 +1,31 @@
-
 <header class="header">
     <div class="container-fluid pt-2 pb-2">
         <div class="d-flex justify-content-between">
-            <a class="navbar-brand text-white " style="margin-left :16px" href="#">QUẢN LÝ HỌC SINH</a>
+            <a class="navbar-brand text-white" style="margin-left: 20px" href="#">QUẢN LÝ HỌC SINH</a>
 
-                <div class="d-flex align-content-center" style="margin-right: 30px">
+            <!-- Dropdown User Info -->
+            <div class="dropdown d-flex align-items-center">
+                <!-- Tên người dùng và Avatar -->
+                <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center"
+                        type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="mr-2" style="font-size: 1rem;">{{ profile.name }}</span>
+                    <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Avatar"
+                         class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                </button>
 
-                    <a href="/log_out">
-                        <i class="fa fa-sign-out text-white icon-header"
-                           style="padding: 10px; margin-left: 10px; font-size: 18px;" aria-hidden="true"></i>
-                    </a>
-                </div>
+                <!-- Menu Dropdown -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                        <a class="dropdown-item" href="#">Tên: {{ profile.name }}</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#">Vai trò: {{ current_user.user_role.name }}</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="/logout">Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
 
         </div>
     </div>

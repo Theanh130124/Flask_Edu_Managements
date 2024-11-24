@@ -32,10 +32,42 @@ background-color: #aaaaaa4c;
 border-radius: 50%;
 }
 .header{
-background: linear-gradient(to right, #08a9e6, #0165d9);
+background: linear-gradient(to right,  #0165d9, #51a6fa);
 }
 
 .footer_home{
-background: linear-gradient(to right, #08a9e6, #0165d9);
+background: linear-gradient(to right,  #0165d9 ,#51a6fa);
+}
+/* Dropdown button hover effect */
+.dropdown-toggle:hover {
+    color: #ffd700;  /* Màu vàng khi hover vào tên và avatar */
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    background-color: #343a40;  /* Màu nền tối cho menu */
+    border-radius: 8px;          /* Bo tròn góc menu */
+    min-width: 220px;            /* Đảm bảo chiều rộng đủ lớn */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Shadow cho menu */
+}
+
+/* Hover item trong dropdown */
+.dropdown-item:hover {
+    background-color: #007bff;  /* Màu nền khi hover vào item */
+    color: white;               /* Màu chữ khi hover */
+}
+
+/* Đổi màu cho button dropdown khi hover */
+.dropdown-item.text-danger:hover {
+    background-color: #b6b9bc;  /* Đỏ cho mục đăng xuất khi hover */
+    color: white;               /* Đảm bảo chữ trắng */
+}
+
+
+/* Responsive Design - dropdown trong các màn hình nhỏ */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        width: 100%; /* Chiều rộng toàn bộ khi ở màn hình nhỏ */
+    }
 }
 
