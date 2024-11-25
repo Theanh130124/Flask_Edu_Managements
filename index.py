@@ -1,10 +1,11 @@
-
-from app import dao, login , app , admin
+from app.admin import *
+from app import dao, login , app
 from flask import render_template, redirect, request, flash, url_for
 from flask_login import current_user, login_required, logout_user, login_user
 from app.models import UserRole #Phải ghi là app.models để tránh lỗi profile
 from form import AdmisionStudent , LoginForm
 from decorators import role_only
+
 from dao import create_student
 
 

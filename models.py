@@ -1,5 +1,7 @@
 from datetime import datetime
 from flask_login import UserMixin
+from sqlalchemy.dialects.mssql.information_schema import views
+
 from app import db, app
 from sqlalchemy import Column, Integer, String, Text, Float, Boolean, ForeignKey, Enum, DateTime, CheckConstraint
 from sqlalchemy.orm import relationship
@@ -52,14 +54,15 @@ class Profile(BaseModel):
 
 
 
-class User(UserMixin, db.Model):
-    id = Column(Integer, ForeignKey(Profile.id), autoincrement=True, primary_key=True, nullable=False)
+class User(UserMixin, BaseModel):
+
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), default=UserRole.STAFF)
     active = Column(Boolean, default=True)
     avatar = Column(String(100), nullable=False, default="default_avatar.png")
-    profile_id = relationship("Profile", backref="user", lazy=True, uselist=False)
+    profile_id = Column(Integer, ForeignKey("profile.id"), unique=True, nullable=False)
+    profile = relationship("Profile", backref="user", lazy=True, uselist=False)
 
 
 
@@ -98,12 +101,13 @@ class Class(BaseModel):
     )
 
 
-class Student(db.Model):
-    id = Column(Integer, ForeignKey(Profile.id), autoincrement=True, primary_key=True)
+class Student(BaseModel):
+
     grade = Column(Enum(GRADE), default=GRADE.KHOI10)
     classes = relationship("Students_Classes", backref="student", lazy=True)
     profile = relationship("Profile", backref="student", lazy=True, uselist=False)
-    regulation_id = Column(Integer, ForeignKey('regulation.id'), nullable=False)
+    profile_id = Column(Integer, ForeignKey("profile.id"), unique=True ,nullable=False)
+    regulation_id = Column(Integer, ForeignKey('regulation.id'),nullable=False)
 
 
 class Students_Classes(BaseModel):
@@ -256,22 +260,22 @@ if __name__ == "__main__":
         # db.session.add_all([p1, p2 ,p3 ,p4 ,p5,p6 ,p7,p8])
         db.session.commit()
         # #  #
-        acc1 = User(id=1, username="theanh", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.ADMIN)
-        acc2 = User(id=2, username="minhtuyet", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.STAFF)
-        acc3 = User(id=3, username="duchuy", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
-        acc4 = User(id=4, username="truongbach", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
-        acc5 = User(id=5, username="duykhang", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
-        acc6 = User(id=6, username="trongnhan", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
-        acc7 = User(id=7, username="xuannghi", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
-        acc8 = User(id=8, username="thimen", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
-                    user_role=UserRole.TEACHER)
+        acc1 = User( username="theanh", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.ADMIN, profile_id =1)
+        acc2 = User( username="minhtuyet", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.STAFF , profile_id =2)
+        acc3 = User( username="duchuy", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER , profile_id =3)
+        acc4 = User( username="truongbach", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER , profile_id =4)
+        acc5 = User( username="duykhang", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER,profile_id =5)
+        acc6 = User( username="trongnhan", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER,profile_id =6)
+        acc7 = User( username="xuannghi", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER, profile_id =7)
+        acc8 = User( username="thimen", password=str(hashlib.md5("123456".encode("utf-8")).hexdigest()),
+                    user_role=UserRole.TEACHER, profile_id =8)
         # db.session.add_all([acc1,acc2,acc3,acc4,acc5,acc6,acc7,acc8])
         db.session.commit()
         regulations = [
@@ -289,4 +293,14 @@ if __name__ == "__main__":
         cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=2, teacher_id=8,regulation_id=2)
 
         # db.session.add_all([cl101, cl102, cl111, cl112, cl121, cl122,])
+        db.session.commit()
+
+        sb1 = Subject(name='Toán' , grade=GRADE.KHOI10 , number_of_15p=3, number_of_45p=2)
+        sb2 = Subject(name='Ngữ Văn', grade=GRADE.KHOI10, number_of_15p=3, number_of_45p=2)
+        sb3 = Subject(name='Lý', grade=GRADE.KHOI10, number_of_15p=3, number_of_45p=2)
+        sb4 = Subject(name='Hóa', grade=GRADE.KHOI10, number_of_15p=3, number_of_45p=2)
+        sb5 = Subject(name='Toán', grade=GRADE.KHOI11, number_of_15p=3, number_of_45p=2)
+        sb6 = Subject(name='Lý', grade=GRADE.KHOI11, number_of_15p=3, number_of_45p=2)
+        sb7 = Subject(name='Toán', grade=GRADE.KHOI12, number_of_15p=3, number_of_45p=2)
+        db.session.add_all([sb1,sb2,sb3,sb4,sb5,sb6,sb7])
         db.session.commit()
