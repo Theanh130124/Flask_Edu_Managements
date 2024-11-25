@@ -17,7 +17,7 @@ def auth_user(username, password):
     return User.query.filter(User.username.__eq__(username.strip()),
                              User.password.__eq__(password)).first()
 
-
+#Student
 def create_student(form):
     profile = Profile(name=form.full_name.data,
                       gender=int(form.gender.data),

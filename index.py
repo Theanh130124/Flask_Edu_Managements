@@ -1,9 +1,9 @@
 
-from app import dao, login , app
-from flask import render_template, redirect,  request , flash
+from app import dao, login , app , admin
+from flask import render_template, redirect, request, flash, url_for
 from flask_login import current_user, login_required, logout_user, login_user
 from app.models import UserRole #Phải ghi là app.models để tránh lỗi profile
-from form import AdmisionStudent
+from form import AdmisionStudent , LoginForm
 from decorators import role_only
 from dao import create_student
 
@@ -19,34 +19,38 @@ from dao import create_student
 @login.user_loader
 def user_load(user_id):
     return dao.load_user(user_id)
-
+# import pdb
+# pdb.set_trace()
 @app.route('/')
 def index():
+    if current_user.is_authenticated:
+        if current_user.user_role == UserRole.ADMIN:
+            return redirect("/admin")
+        return redirect("/home")
     return redirect('/login')
 
+#Nếu truyền url_for sẽ vào index -> truyêền redirect thì vào router
 @app.route('/home')
 @login_required #Có cái này để gom user vào -> home
+@role_only([UserRole.STAFF , UserRole.TEACHER])
 def home():
     profile = dao.get_info_by_id(current_user.id)
     return render_template('index.html',  profile=profile)  # Trang home (index.html)
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login_my_user():
-        err_msg = ''
-        if request.method.__eq__('POST'):
-            username = request.form.get('username')
-            password = request.form.get('password')
-            # Truyền cả profile và user của người đó vào
-            user = dao.auth_user(username=username, password=password)
-            if user:
-                login_user(user)
-                return redirect('/home' )
-            else:
-                flash('Thông tin đăng nhập không hợp lệ', 'danger')
-
-
-        return render_template('login.html', err_msg=err_msg)
+def login():
+    mse = ""
+    form = LoginForm()
+    if request.method == "POST" and form.SubmitFieldLogin():
+        username = form.username.data
+        password = form.password.data
+        user = dao.auth_user(username=username, password=password)
+        if user:
+            login_user(user)
+            return redirect(url_for('index'))
+        mse = "Tài khoản hoặc mật khẩu không đúng"
+    return render_template('login.html', form=form, mse=mse)
 
 @app.route('/logout', methods=['get'])
 def logout_my_user():

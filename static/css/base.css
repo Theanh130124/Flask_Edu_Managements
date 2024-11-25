@@ -70,4 +70,10 @@ background: linear-gradient(to right,  #0165d9 ,#51a6fa);
         width: 100%; /* Chiều rộng toàn bộ khi ở màn hình nhỏ */
     }
 }
+.logo{
+margin-left: 20px;
+width:220px ;
+height: 50px;
+
+}
 

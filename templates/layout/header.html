@@ -1,7 +1,8 @@
 <header class="header">
     <div class="container-fluid pt-2 pb-2">
         <div class="d-flex justify-content-between">
-            <a class="navbar-brand text-white" style="margin-left: 20px" href="#">QUẢN LÝ HỌC SINH</a>
+<!--            <h3 class="navbar-brand text-white" style="margin-left: 20px">QUẢN LÝ HỌC SINH </h3>-->
+            <img  class="navbar-brand text-white logo"  src="https://sis.ou.edu.vn/theme/sisv2/assets/logo.png" alt="Logo Trường">
 
             <!-- Dropdown User Info -->
             <div class="dropdown d-flex align-items-center">
@@ -16,13 +17,13 @@
                 <!-- Menu Dropdown -->
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                     <li>
-                        <a class="dropdown-item" href="#">Tên: {{ profile.name }}</a>
+                        <a class="dropdown-item" href="#"><i class="fa-solid fa-user" style="margin-right: 4px"></i>Tên: {{ profile.name }}</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="#">Vai trò: {{ current_user.user_role.name }}</a>
                     </li>
                     <li>
-                        <a class="dropdown-item text-danger" href="/logout">Đăng xuất</a>
+                        <a class="dropdown-item text-danger" href="/logout"> <i class="fa-solid fa-power-off " style="margin-right: 4px"></i>Đăng xuất</a>
                     </li>
                 </ul>
             </div>
