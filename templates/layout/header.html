@@ -9,15 +9,14 @@
                 <!-- Tên người dùng và Avatar -->
                 <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center"
                         type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="mr-2" style="font-size: 1rem;">{{ profile.name }}</span>
-                    <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Avatar"
-                         class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    <span class="mr-2" style="font-size: 1rem;">  {{ profile.name }}</span>
+                    <img src="{{ current_user.avatar }}" alt="Avatar"  class="rounded-circle " style="width: 40px; height: 40px; object-fit: cover;">
                 </button>
 
                 <!-- Menu Dropdown -->
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                     <li>
-                        <a class="dropdown-item" href="#"><i class="fa-solid fa-user" style="margin-right: 4px"></i>Tên: {{ profile.name }}</a>
+                        <a class="dropdown-item" href="/acc_info"><i class="fa-solid fa-user" style="margin-right: 4px"></i>Thông tin tài khoản</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="#">Vai trò: {{ current_user.user_role.name }}</a>

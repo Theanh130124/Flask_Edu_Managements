@@ -61,7 +61,7 @@ class User(UserMixin, BaseModel):
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), default=UserRole.STAFF)
     active = Column(Boolean, default=True)
-    avatar = Column(String(100), nullable=False, default="default_avatar.png")
+    avatar = Column(String(255), nullable=False, default="https://res.cloudinary.com/dxiawzgnz/image/upload/v1732632586/pfvvxablnkaeqmmbqeit.png")
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True, nullable=False)
     profile = relationship("Profile", backref="user", lazy=True, uselist=False)
 
@@ -298,7 +298,7 @@ if __name__ == "__main__":
         cl112 = Class(grade=GRADE.KHOI11, name='11A2', amount=8, teacher_id=6,regulation_id=2)
         cl121 = Class(grade=GRADE.KHOI12, name='12A1', amount=5, teacher_id=7,regulation_id=2)
         cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=2, teacher_id=8,regulation_id=2)
-
+        #
         # db.session.add_all([cl101, cl102, cl111, cl112, cl121, cl122,])
         db.session.commit()
 
@@ -309,5 +309,5 @@ if __name__ == "__main__":
         sb5 = Subject(name='Toán', grade=GRADE.KHOI11, number_of_15p=3, number_of_45p=2)
         sb6 = Subject(name='Lý', grade=GRADE.KHOI11, number_of_15p=3, number_of_45p=2)
         sb7 = Subject(name='Toán', grade=GRADE.KHOI12, number_of_15p=3, number_of_45p=2)
-        db.session.add_all([sb1,sb2,sb3,sb4,sb5,sb6,sb7])
+        # db.session.add_all([sb1,sb2,sb3,sb4,sb5,sb6,sb7])
         db.session.commit()

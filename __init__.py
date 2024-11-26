@@ -3,8 +3,10 @@ from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
+
 import cloudinary
-#
+import cloudinary.api
+import cloudinary.uploader
 
 
 app = Flask(__name__)
@@ -18,7 +20,8 @@ babel = Babel(app)
 cloudinary.config(
     cloud_name="dxiawzgnz",
     api_key="916324835836949",
-    api_secret="it9HP_2TUJjIHLSshkbm0BYA5qE"
+    api_secret="YOUR_API_SECRET",
+    secure=True,
 )
 db = SQLAlchemy(app)
 login = LoginManager(app)

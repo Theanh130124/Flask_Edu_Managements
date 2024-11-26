@@ -33,6 +33,12 @@ class SubjectAdminView(AuthenticatedView):
         'number_of_45p': 'Số bài kiểm tra 45P',
         'teachings' : 'Áp dụng cho'
     }
+    column_filters = [
+        'name',
+        'grade',
+        'number_of_15p',
+        'number_of_45p',
+    ]
     can_view_details = True
     # Format hiển thị cột 'teachings'
     def format_teachings(view, context, model, name):
@@ -47,12 +53,7 @@ class SubjectAdminView(AuthenticatedView):
 class RegulationsAdminView(AuthenticatedView):
     #Display class and student -> toString bên models -> displayname
     column_list = ['type', 'name', 'min_value', 'max_value', 'classes', 'students']
-    # column_filters = [
-    #     'type',
-    #     'name',
-    #     'min_value',
-    #     'max_value',
-    # ]
+
     column_labels = {
         'type': 'Loại quy định',
         'name': 'Tên quy định',
@@ -68,11 +69,6 @@ class RegulationsAdminView(AuthenticatedView):
     can_view_details = True
 
 
-class TeachingView(AuthenticatedView):
-    column_list = ['id', 'class_id', 'subject_id']
-    can_view_details = True
-
-
 class UserView(AuthenticatedView):
     column_list = ['username','password','user_role','active','profile' ]
     column_labels = {
@@ -82,6 +78,11 @@ class UserView(AuthenticatedView):
         'active':'Trạng thái',
         'profile':'Họ tên người dùng'
     }
+    column_filters = [
+        'username',
+        'user_role',
+        'active',
+    ]
     can_view_details = True
 
     #Hook sau 
@@ -103,6 +104,12 @@ class ProfileView(AuthenticatedView):
         'address':'Địa chỉ',
         'phone':'Số điện thoại'
     }
+    column_filters = [
+        'name',
+        'email',
+        'address',
+        'phone',
+    ]
     can_view_details = True
 
 

@@ -1,16 +1,19 @@
+
 from app.admin import *
 from app import dao, login , app
-from flask import render_template, redirect, request, flash, url_for
+from flask import render_template, redirect, request, flash, url_for , jsonify
 from flask_login import current_user, login_required, logout_user, login_user
+
+from app.dao import display_profile_data, update_user_info
 from app.models import UserRole #Phải ghi là app.models để tránh lỗi profile
-from form import AdmisionStudent , LoginForm
+from form import AdmisionStudent , LoginForm , Info_Account
 from decorators import role_only
 
 from dao import create_student
 
 
 #Index là home
-
+#Làm cái nào trên cũng truyền info vào
 
 
 
@@ -91,5 +94,30 @@ def register():
             return redirect("/index")
     return render_template("register_student.html", form_student=form_student, profile=profile)
 
+@app.route('/acc_info', methods=['GET', 'POST'])
+@login_required
+@role_only([UserRole.STAFF, UserRole.TEACHER])
+def info_acc():
+    form_account = Info_Account()
+    profile = dao.get_info_by_id(current_user.id)
+    user = current_user
+
+    if form_account.validate_on_submit():
+        display_profile_data(profile, form_account)
+        # Cập nhật thông tin người dùng
+        update_user_info(profile, form_account)
+
+        # Nếu là yêu cầu AJAX, trả về dữ liệu dưới dạng JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'status': 'success',
+                'avatar_url': user.avatar_url
+            })
+
+        flash('Thông tin của bạn đã được cập nhật!', 'success')
+        return redirect('/acc_info')
+    display_profile_data(profile, form_account)
+
+    return render_template('acc_info.html', form_account=form_account, profile=profile , current_user=current_user)
 if __name__ == '__main__':
     app.run(debug=True) #Lên pythonanywhere nhớ để Falsse

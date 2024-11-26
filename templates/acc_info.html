@@ -1,0 +1,85 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Quản lý Thông Tin Tài Khoản{% endblock %}
+
+{% block content %}
+<form method="POST" id="accountForm" class="d-flex flex-column justify-content-center gap-2">
+    <h4 class="text-center">Cập Nhật Thông Tin Tài Khoản</h4>
+    {{ form_account.csrf_token }}
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_account.name.label(class="form-label") }}
+            {{ form_account.name(class="form-control") }}
+            <div class="invalid-feedback">{{ form_account.name.errors|join(", ") }}</div>
+        </div>
+        <div class="col-md-6">
+            {{ form_account.email.label(class="form-label") }}
+            {{ form_account.email(class="form-control") }}
+            <div class="invalid-feedback">{{ form_account.email.errors|join(", ") }}</div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_account.birthday.label(class="form-label") }}
+            {{ form_account.birthday(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+            {{ form_account.gender.label(class="form-label") }}
+            {{ form_account.gender(class="form-select") }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_account.phone.label(class="form-label") }}
+            {{ form_account.phone(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+            {{ form_account.address.label(class="form-label") }}
+            {{ form_account.address(class="form-control") }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_account.avatar.label(class="form-label") }}
+            {{ form_account.avatar(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+        
+        <img src="{{ current_user.avatar }}" alt="Avatar" class="img-thumbnail " style="width: 100px; height: 100px; object-fit: cover; border-radius: 70%;"  id="avatar-preview"/>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex align-items-center justify-content-end gap-1">
+            {{ form_account.submit(class="btn btn-primary me-2") }}
+            <button type="button" class="btn btn-danger">Hủy</button>
+        </div>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$('#accountForm').on('submit', function (event) {
+    event.preventDefault(); // Ngừng hành động mặc định của form
+    var formData = new FormData(this);
+
+    console.log(formData); // Kiểm tra dữ liệu gửi đi
+
+    $.ajax({
+        type: 'POST',
+        url: '/acc_info',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            console.log(response); // Kiểm tra dữ liệu trả về
+            // Cập nhật dữ liệu trong trang mà không cần tải lại
+            $('#avatar-preview').attr('src', response.avatar_url);
+            alert('Thông tin của bạn đã được cập nhật!');
+        },
+        error: function(xhr, status, error) {
+            alert('Cập nhật thất bại! Vui lòng thử lại.');
+        }
+    });
+});
+</script>
+{% endblock %}
