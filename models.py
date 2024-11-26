@@ -51,7 +51,8 @@ class Profile(BaseModel):
     __table_args__ = (
         CheckConstraint("LENGTH(phone) = 10 AND phone REGEXP '^[0-9]+$'", name="check_phone_format"),
     )
-
+    def __str__(self):
+        return self.name
 
 
 class User(UserMixin, BaseModel):
@@ -74,9 +75,10 @@ class Subject(BaseModel):
     teachings = relationship('Teaching', backref='subject', lazy=True)
 
     __table_args__ = (
-        CheckConstraint("number_of_15p >= 0", name="check_number_of_15p"),
-        CheckConstraint("number_of_45p >= 0", name="check_number_of_45p"),
+        CheckConstraint("number_of_15p >= 0 AND number_of_15p <=5", name="check_number_of_15p"),
+        CheckConstraint("number_of_45p >= 0 AND number_of_45p <=3 ", name="check_number_of_45p"),
     )
+
 
 
 # class Teacher(db.Model):
@@ -100,6 +102,8 @@ class Class(BaseModel):
         CheckConstraint("amount >= 0", name="check_class_amount"),
     )
 
+    def __str__(self):
+       return self.name
 
 class Student(BaseModel):
 
@@ -109,6 +113,8 @@ class Student(BaseModel):
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True ,nullable=False)
     regulation_id = Column(Integer, ForeignKey('regulation.id'),nullable=False)
 
+    def __str__(self):
+        return self.profile.name
 
 class Students_Classes(BaseModel):
     class_id = Column(Integer, ForeignKey(Class.id), nullable=False)
@@ -127,6 +133,7 @@ class Teaching(db.Model):
     semester_id = Column(Integer, ForeignKey(Semester.id), nullable=False)
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
+
 
 
 # Score_final
