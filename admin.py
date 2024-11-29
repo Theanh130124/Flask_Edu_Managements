@@ -24,14 +24,14 @@ class LogoutView(BaseView):
 
 
 class SubjectAdminView(AuthenticatedView):
-    column_list = ['id', 'name','grade','number_of_15p','number_of_45p','teachings']
+    column_list = ['id', 'name', 'grade', 'number_of_15p', 'number_of_45p', 'teachings']
     column_labels = {
         'id': 'Mã',
         'name': 'Tên môn',
         'grade': 'Khối ',
         'number_of_15p': 'Số bài kiểm tra 15P',
         'number_of_45p': 'Số bài kiểm tra 45P',
-        'teachings' : 'Áp dụng cho'
+        'teachings': 'Áp dụng cho'
     }
     column_filters = [
         'name',
@@ -40,18 +40,21 @@ class SubjectAdminView(AuthenticatedView):
         'number_of_45p',
     ]
     can_view_details = True
+
     # Format hiển thị cột 'teachings'
     def format_teachings(view, context, model, name):
         if model.teachings:
-            return ', '.join([f'Lớp: {t.class_id}, Học kỳ: {t.semester_id}, Giáo viên: {t.teacher_id}' for t in model.teachings])
+            return ', '.join(
+                [f'Lớp: {t.class_id}, Học kỳ: {t.semester_id}, Giáo viên: {t.teacher_id}' for t in model.teachings])
         return 'Chưa áp dụng'
+
     column_formatters = {
         'teachings': format_teachings
     }
 
 
 class RegulationsAdminView(AuthenticatedView):
-    #Display class and student -> toString bên models -> displayname
+    # Display class and student -> toString bên models -> displayname
     column_list = ['type', 'name', 'min_value', 'max_value', 'classes', 'students']
 
     column_labels = {
@@ -63,20 +66,20 @@ class RegulationsAdminView(AuthenticatedView):
         'students': 'Danh sách học sinh',
     }
 
-
     # Có thể xem chi tiết class và student
     column_details_list = ['type', 'name', 'min_value', 'max_value', 'classes', 'students']
     can_view_details = True
 
 
 class UserView(AuthenticatedView):
-    column_list = ['username','password','user_role','active','profile' ]
+    column_list = ['username', 'password', 'user_role', 'active', 'profile']
+    # Phải loại bỏ học sinh khỏi profile ở đây
     column_labels = {
-        'username':'Tên đăng nhập',
-        'password':'Mật khẩu',
-        'user_role':'Vai trò',
-        'active':'Trạng thái',
-        'profile':'Họ tên người dùng'
+        'username': 'Tên đăng nhập',
+        'password': 'Mật khẩu',
+        'user_role': 'Vai trò',
+        'active': 'Trạng thái',
+        'profile': 'Họ tên người dùng'
     }
     column_filters = [
         'username',
@@ -85,24 +88,30 @@ class UserView(AuthenticatedView):
     ]
     can_view_details = True
 
-    #Hook sau 
+    # Lọc profile không liên quan đến học sinh
+    def get_query(self):
+        return self.session.query(self.model).filter(self.model.profile_id.notin_(
+            self.session.query(Student.profile_id).distinct()
+        ))
+
+    # Hook sau
     def on_model_change(self, form, model, is_created):
         if is_created:
             model.password = hash_password(form.password.data)
         elif form.password.data:
-         model.password = hash_password(form.password.data)
+            model.password = hash_password(form.password.data)
         return super().on_model_change(form, model, is_created)
 
 
 class ProfileView(AuthenticatedView):
-    column_list = ['name', 'email','birthday','gender','address','phone']
+    column_list = ['name', 'email', 'birthday', 'gender', 'address', 'phone']
     column_labels = {
-        'name':'Họ tên',
-        'email':'Email',
-        'birthday':'Ngày sinh',
-        'gender':'Giới tính',
-        'address':'Địa chỉ',
-        'phone':'Số điện thoại'
+        'name': 'Họ tên',
+        'email': 'Email',
+        'birthday': 'Ngày sinh',
+        'gender': 'Giới tính',
+        'address': 'Địa chỉ',
+        'phone': 'Số điện thoại'
     }
     column_filters = [
         'name',

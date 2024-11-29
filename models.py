@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime , date
+
 from flask_login import UserMixin
 from sqlalchemy.dialects.mssql.information_schema import views
 
@@ -39,15 +40,20 @@ class GENDER(enum.Enum):
     Nam = 'Nam'
     Nu = 'Nữ'
 
+class TYPEEXAM(enum.Enum):
+    EXAM_15P = 1
+    EXAM_45P = 2
+    EXAM_final = 3
 
 class Profile(BaseModel):
 
     name = Column(String(50), nullable=False)
     email = Column(String(50), unique=True, nullable=False)
-    birthday = Column(DateTime, nullable=False)
+    birthday = Column(db.Date ,nullable=False)
     gender = Column(Enum(GENDER), default=GENDER.Nam)
     address = Column(Text, nullable=False)
     phone = Column(String(10), unique=True, nullable=False)
+    # Các trường ràng buộc khi admin nhập liệu dưới CSDL
     __table_args__ = (
         CheckConstraint("LENGTH(phone) = 10 AND phone REGEXP '^[0-9]+$'", name="check_phone_format"),
     )
@@ -56,7 +62,6 @@ class Profile(BaseModel):
 
 
 class User(UserMixin, BaseModel):
-
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), default=UserRole.STAFF)
@@ -65,6 +70,23 @@ class User(UserMixin, BaseModel):
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True, nullable=False)
     profile = relationship("Profile", backref="user", lazy=True, uselist=False)
 
+
+
+
+class Staff(BaseModel):
+    user = relationship("User", backref="staff", lazy=True)
+    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
+
+
+class Teacher(BaseModel):
+    class_teach = relationship("Class", backref="teacher", lazy=True)
+    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
+    user = relationship("User", backref="teacher", lazy=True)
+
+class Admin(BaseModel):
+    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
+    user = relationship("User", backref="admin", lazy=True)
+    notifications = relationship('Notification', backref="user", lazy=True)
 
 
 class Subject(BaseModel):
@@ -87,14 +109,15 @@ class Subject(BaseModel):
 #     teachings = relationship('Teaching', backref='teacher', lazy=True)
 #     user = relationship("User", backref="teacher", lazy=True,  uselist=False)
 
-# User.id phải là của giáo viên
+#
 class Class(BaseModel):
     grade = Column(Enum(GRADE))
     name = Column(String(10), nullable=False)
     amount = Column(Integer, default=0)
     year = Column(Integer, default=datetime.now().year)
-    teacher_id = Column(Integer, ForeignKey(User.id),
-                        unique=True)  # Giao vien chu nhiem-> không được trùng nữa nhớ bổ sung dô đường noi so do
+    # Giáo viên chủ nhiệm
+    teacher_id = Column(Integer, ForeignKey(Teacher.id),
+                        unique=True)
     teachings = relationship('Teaching', backref='class', lazy=True)
     students = relationship("Students_Classes", backref="class", lazy=True)
     regulation_id = Column(Integer, ForeignKey('regulation.id'), nullable=False)
@@ -111,7 +134,7 @@ class Student(BaseModel):
     classes = relationship("Students_Classes", backref="student", lazy=True)
     profile = relationship("Profile", backref="student", lazy=True, uselist=False)
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True ,nullable=False)
-    regulation_id = Column(Integer, ForeignKey('regulation.id'),nullable=False)
+    regulation_id = Column(Integer, ForeignKey('regulation.id'),nullable=False) #default = "Regulation.type.RE_AGE.id")
 
     def __str__(self):
         return self.profile.name
@@ -134,46 +157,28 @@ class Teaching(db.Model):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
+# Chi tiết điểm
+class Exam(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    student_id = Column(Integer, ForeignKey(Student.id), nullable=False)
+    teach_plan_id = Column(Integer, ForeignKey(Teaching.id), nullable=False)
+    scores = relationship("Score", backref="exam", lazy=True)
 
+    student = relationship("Student", backref="exam", lazy=True)
+    teach_plan = relationship("Teaching", backref="exam", lazy=True)
 
 # Score_final
-class Score(BaseModel):
-    score_final = Column(Float, nullable=False)
-    student_id = Column(Integer, ForeignKey("student.id"), nullable=False)
-    teach_plan_id = Column(Integer, ForeignKey("teaching.id"), nullable=False)
-
-    student = relationship("Student", backref="score", lazy=True)
-    teach_plan = relationship("Teaching", backref="score", lazy=True)
-
-    score_of_15p = relationship('Score_of_15p', backref='score_15p', lazy=True)
-    score_of_45p = relationship('Score_of_45p', backref='score_45p', lazy=True)
-    __table_args__ = (
-        CheckConstraint('score_final >= 0', name='check_score_min'),
-        CheckConstraint('score_final <= 10', name='check_score_max'),
-    )
-
-
-class Score_of_15p(BaseModel):
-    score = Column(Float, nullable=False)
-
-    score_id = Column(Integer, ForeignKey(Score.id), nullable=False)
+class Score(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    score = Column(Float)
+    type = Column(Enum(TYPEEXAM))
+    count = Column(Integer)
+    Exam_id = Column(Integer, ForeignKey(Exam.id), nullable=False)
 
     __table_args__ = (
-        CheckConstraint('score >= 0', name='check_score_of_15p_min'),
-        CheckConstraint('score <= 10', name='check_score_of_15p_max'),
+        CheckConstraint('score >= 0', name='check_age_min'),
+        CheckConstraint('score <= 10', name='check_age_max'),
     )
-
-
-class Score_of_45p(BaseModel):
-    score = Column(Float, nullable=False)
-
-    score_id = Column(Integer, ForeignKey(Score.id), nullable=False)
-
-    __table_args__ = (
-        CheckConstraint('score >= 0', name='check_score_of_45p_min'),
-        CheckConstraint('score <= 10', name='check_score_of_45p_max'),
-    )
-
 
 # #Quy định với Notification
 # class Notification(BaseModel):
@@ -192,73 +197,87 @@ class Regulation(BaseModel):
         CheckConstraint("min_value <= max_value", name="check_min_less_equal_max"),
     )
 
+#Mở rộng
+class Notification(BaseModel):
+    subject = Column(String(200),nullable=False)
+    content = Column(Text,nullable=False)
+    created_at = Column(DateTime, default=datetime.now())
+    admin_id = Column(Integer, ForeignKey(Admin.id), nullable=False)
 
 if __name__ == "__main__":
     with app.app_context():
-        db.session.commit()
+        # db.session.commit()
         # db.drop_all()
         # db.create_all()
+
 
         p1 = Profile(
             name="Trần Thế Anh",
             email="theanhtran13012004@gmail.com",
-            birthday=datetime(1995, 1, 13).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 1, 13).date(),
             gender=GENDER.Nam,
             address="1508 Lê Văn Lương , Nhà Bè , TPHCM",
             phone="0933033801"
         )
+
         p2 = Profile(
             name="Nguyễn Thị Minh Tuyết",
             email="minhtuyet31082004@gmail.com",
-            birthday=datetime(1995, 1, 31).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 8, 31).date(),
             gender=GENDER.Nu,
             address="802 Lê Văn Lương , Nhà Bè , TPHCM",
             phone="0522194804"
         )
+
         p3 = Profile(
             name="Trần Đức Huy",
             email="duchuytran30112004@gmail.com",
-            birthday=datetime(1999, 11, 30).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 11, 30).date(),
             gender=GENDER.Nam,
             address="145 Cộng hòa , Tân Bình , TPHCM",
             phone="0913001642"
         )
+
         p4 = Profile(
             name="Đào Trương Bách",
             email="daotruongbach123@gmail.com",
-            birthday=datetime(1997, 1, 20).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 10, 30).date(),
             gender=GENDER.Nam,
             address="1004 Linh Xuân , Thử Đức , TPHCM",
             phone="0531571272"
         )
+
         p5 = Profile(
             name="Võ Duy Khang",
             email="duykhangvo004@gmail.com",
-            birthday=datetime(1996, 6, 20).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 11, 20).date(),
             gender=GENDER.Nam,
             address="1403 Thủy Vân , Phường 3 , TP.Vũng Tàu",
             phone="0958473712"
         )
+
         p6 = Profile(
             name="Nguyễn Trọng Nhân",
             email="trongnhan3011@gmail.com",
-            birthday=datetime(1994, 12, 3).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1993, 11, 12).date(),
             gender=GENDER.Nam,
             address="1312 đường Tên Lửa , Quận 12 , TPHCM",
             phone="0914201642"
         )
+
         p7 = Profile(
             name="Nguyễn Xuân Nghi",
             email="xuannghi3021@gmail.com",
-            birthday=datetime(1989, 11, 22).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1994, 8, 12).date(),
             gender=GENDER.Nu,
             address="371 Nguyễn Kiệm , Gò Vấp , TPHCM",
             phone="0913001125"
         )
+
         p8 = Profile(
             name="Trần Thị Mến",
             email="thimentran001@gmail.com",
-            birthday=datetime(1990, 11, 30).date(),  # Sử dụng datetime để chỉ định ngày sinh
+            birthday=datetime(1995, 3, 30).date(),
             gender=GENDER.Nu,
             address="1349 Nguyễn Thị Thập , Quận 7 , TPHCM",
             phone="0912101642"
@@ -286,18 +305,28 @@ if __name__ == "__main__":
         # db.session.add_all([acc1,acc2,acc3,acc4,acc5,acc6,acc7,acc8])
         db.session.commit()
         regulations = [
-            Regulation(type=TYPE_REGULATION.RE_AGE, name="Tiếp nhận học sinh", min_value=6, max_value=18),
-            Regulation(type=TYPE_REGULATION.RE_AMOUNT,name="Sĩ số tối đa", min_value=0, max_value=30), ]
+            Regulation(type=TYPE_REGULATION.RE_AGE, name="Tiếp nhận học sinh", min_value=16, max_value=20),
+            Regulation(type=TYPE_REGULATION.RE_AMOUNT,name="Sĩ số tối đa", min_value=0, max_value=40), ]
         for r in regulations:
             # db.session.add(r)
             db.session.commit()
 
-        cl101 = Class(grade=GRADE.KHOI10, name='10A1', amount=10, teacher_id=3, regulation_id=2)
-        cl102 = Class(grade=GRADE.KHOI10, name='10A2', amount=11, teacher_id=4, regulation_id=2)
-        cl111 = Class(grade=GRADE.KHOI11, name='11A1', amount=7, teacher_id=5,regulation_id=2)
-        cl112 = Class(grade=GRADE.KHOI11, name='11A2', amount=8, teacher_id=6,regulation_id=2)
-        cl121 = Class(grade=GRADE.KHOI12, name='12A1', amount=5, teacher_id=7,regulation_id=2)
-        cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=2, teacher_id=8,regulation_id=2)
+
+        tc1 = Teacher(user_id=3)
+        tc2 = Teacher(user_id=4)
+        tc3 = Teacher(user_id=5)
+        tc4 = Teacher(user_id=6)
+        tc5 = Teacher(user_id=7)
+        tc6 = Teacher(user_id=8)
+        # db.session.add_all([tc1,tc2,tc3,tc4,tc5,tc6])
+        db.session.commit()
+
+        cl101 = Class(grade=GRADE.KHOI10, name='10A1', amount=10, teacher_id=1, regulation_id=2)
+        cl102 = Class(grade=GRADE.KHOI10, name='10A2', amount=11, teacher_id=2, regulation_id=2)
+        cl111 = Class(grade=GRADE.KHOI11, name='11A1', amount=7, teacher_id=3,regulation_id=2)
+        cl112 = Class(grade=GRADE.KHOI11, name='11A2', amount=8, teacher_id=4,regulation_id=2)
+        cl121 = Class(grade=GRADE.KHOI12, name='12A1', amount=5, teacher_id=5,regulation_id=2)
+        cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=2, teacher_id=6,regulation_id=2)
         #
         # db.session.add_all([cl101, cl102, cl111, cl112, cl121, cl122,])
         db.session.commit()
@@ -310,4 +339,10 @@ if __name__ == "__main__":
         sb6 = Subject(name='Lý', grade=GRADE.KHOI11, number_of_15p=3, number_of_45p=2)
         sb7 = Subject(name='Toán', grade=GRADE.KHOI12, number_of_15p=3, number_of_45p=2)
         # db.session.add_all([sb1,sb2,sb3,sb4,sb5,sb6,sb7])
+        db.session.commit()
+
+
+        #Tạo thử Student
+        # st1 = Student(profile_id =10 , regulation_id = 1   )
+        # db.session.add(st1)
         db.session.commit()

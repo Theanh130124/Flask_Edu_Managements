@@ -1,55 +1,63 @@
 {% extends 'layout/base.html' %}
+
 {% block title %}
-    Tiếp nhận học sinh
+Tiếp nhận học sinh
 {% endblock %}
 
 {% block content %}
-    <form method="post" id="studentForm" class="d-flex flex-column justify-content-center gap-2" action="/student/register">
-        <h4 class="text-center">Tiếp Nhận Học Sinh</h4>
-        {{ form_student.csrf_token }}
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form_student.full_name.label(class="form-label") }}
-                {{ form_student.full_name(class="form-control") }}
-                <div class="invalid-feedback">{{ form_student.full_name.errors|join(", ") }}</div>
-            </div>
-            <div class="col-md-6">
-                {{ form_student.gender.label(class="form-label") }}
-                {{ form_student.gender(class="form-select") }}
-                <div class="invalid-feedback">{{ form_student.gender.errors|join(", ") }}</div>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form_student.birth_date.label(class="form-label") }}
-                {{ form_student.birth_date(class="form-control") }}
-            </div>
-            <div class="col-md-6">
-                {{ form_student.address.label(class="form-label") }}
-                {{ form_student.address(class="form-control") }}
+<form method="post" id="studentForm" class="d-flex flex-column justify-content-center gap-2" action="/student/register">
+    <h4 class="text-center">Tiếp Nhận Học Sinh</h4>
+    {{ form_student.csrf_token }}
 
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                {{ form_student.phone_number.label(class="form-label") }}
-                {{ form_student.phone_number(class="form-control") }}
+    <!-- Hiển thị thông báo flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-            </div>
-            <div class="col-md-6">
-                {{ form_student.email.label(class="form-label") }}
-                {{ form_student.email(class="form-control") }}
-            </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_student.full_name.label(class="form-label") }}
+            {{ form_student.full_name(class="form-control") }}
+            <div class="invalid-feedback">{{ form_student.full_name.errors|join(", ") }}</div>
         </div>
-        <div class="row mb-3 ">
-            <div class="col-md-12 d-flex align-items-center justify-content-end gap-1 ">
-                {{ form_student.submit(class="btn btn-primary me-2") }}
-                <button type="button" class="btn btn-danger">Xóa</button>
-            </div>
+        <div class="col-md-6">
+            {{ form_student.gender.label(class="form-label") }}
+            {{ form_student.gender(class="form-select") }}
+            <div class="invalid-feedback">{{ form_student.gender.errors|join(", ") }}</div>
         </div>
-    </form>
-    <script>
-        if("{{ mse }}" !== "")
-            alert("{{ mse }}")
-    </script>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_student.birth_date.label(class="form-label") }}
+            {{ form_student.birth_date(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+            {{ form_student.address.label(class="form-label") }}
+            {{ form_student.address(class="form-control") }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_student.phone_number.label(class="form-label") }}
+            {{ form_student.phone_number(class="form-control") }}
+        </div>
+        <div class="col-md-6">
+            {{ form_student.email.label(class="form-label") }}
+            {{ form_student.email(class="form-control") }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex align-items-center justify-content-end gap-1">
+            {{ form_student.submit(class="btn btn-primary me-2") }}
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('studentForm').reset();">Xóa</button>
+        </div>
+    </div>
+</form>
+
 {% endblock %}

@@ -1,28 +1,36 @@
-
 from app.admin import *
-from app import dao, login , app
-from flask import render_template, redirect, request, flash, url_for , jsonify
+from app import dao, login, app
+from flask import render_template, redirect, request, flash, url_for, jsonify
 from flask_login import current_user, login_required, logout_user, login_user
-
-from app.dao import display_profile_data, update_user_info
-from app.models import UserRole #Phải ghi là app.models để tránh lỗi profile
-from form import AdmisionStudent , LoginForm , Info_Account
+from app.dao import authen, student
+from app.dao.authen import display_profile_data, update_acc_info
+from app.dao.regulation import get_regulation_by_name
+from app.models import UserRole  # Phải ghi là app.models để tránh lỗi profile
+from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
 from decorators import role_only
-
-from dao import create_student
-
-
-#Index là home
-#Làm cái nào trên cũng truyền info vào
+from datetime import datetime
+import cloudinary.uploader
 
 
+# Index là home
+# Hàm này luôn truyền vào
+@app.context_processor
+def common_attr():
+    if current_user.is_authenticated:
+        profile = authen.get_info_by_id(current_user.id)
+        user = authen.load_user(current_user.id)
+        return {'profile': profile,
+                'user': user}
+    return {}
 
 
 # Tải người dùng lên
 
 @login.user_loader
 def user_load(user_id):
-    return dao.load_user(user_id)
+    return authen.load_user(user_id)
+
+
 # import pdb
 # pdb.set_trace()
 @app.route('/')
@@ -33,13 +41,13 @@ def index():
         return redirect("/home")
     return redirect('/login')
 
-#Nếu truyền url_for sẽ vào index -> truyêền redirect thì vào router
+
+# Nếu truyền url_for sẽ vào index -> truyêền redirect thì vào router
 @app.route('/home')
-@login_required #Có cái này để gom user vào -> home
-@role_only([UserRole.STAFF , UserRole.TEACHER])
+@login_required  # Có cái này để gom user vào -> home
+@role_only([UserRole.STAFF, UserRole.TEACHER])
 def home():
-    profile = dao.get_info_by_id(current_user.id)
-    return render_template('index.html',  profile=profile)  # Trang home (index.html)
+    return render_template('index.html', )  # Trang home (index.html)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -49,12 +57,13 @@ def login():
     if request.method == "POST" and form.SubmitFieldLogin():
         username = form.username.data
         password = form.password.data
-        user = dao.auth_user(username=username, password=password)
+        user = authen.auth_user(username=username, password=password)
         if user:
             login_user(user)
             return redirect(url_for('index'))
         mse = "Tài khoản hoặc mật khẩu không đúng"
     return render_template('login.html', form=form, mse=mse)
+
 
 @app.route('/logout', methods=['get'])
 def logout_my_user():
@@ -65,59 +74,88 @@ def logout_my_user():
 # import pdb
 # pdb.set_trace()
 
-#FIX ROLE_ONLY -> VÀ CÁI PROFILE PHẢI TRUYỀN VÀO LẠI
+# FIX ROLE_ONLY -> VÀ CÁI PROFILE PHẢI TRUYỀN VÀO LẠI
 
 
 
+
+from flask import session
 
 @app.route('/student/register', methods=['GET', 'POST'])
 @login_required
 @role_only([UserRole.STAFF])
 def register():
     form_student = AdmisionStudent()
-    profile = dao.get_info_by_id(current_user.id)
 
-    if request.method == "POST" and form_student.submit():
+    # Lấy quy định độ tuổi từ regulation
+    regulation = get_regulation_by_name("Tiếp nhận học sinh")
+    min_age = regulation.min_value  # độ tuổi tối thiểu
+    max_age = regulation.max_value  # độ tuổi tối đa
+
+    if request.method == "POST" and form_student.validate_on_submit():
         try:
-            s = dao.create_student(form_student)
+            # Tính toán tuổi học sinh
+            birth_date = form_student.birth_date.data
+            current_year = datetime.now().year
+            age = current_year - birth_date.year
+
+            # Kiểm tra độ tuổi của học sinh
+            if age < min_age or age > max_age:
+                flash(f"Độ tuổi phải từ {min_age} đến {max_age}!", "danger")
+                return redirect(url_for("register"))
+
+            # Nếu độ tuổi hợp lệ, tạo học sinh
+            student.create_student(form_student)
+            flash("Tạo học sinh thành công!", "success")
+            return redirect(url_for("register"))
+
         except Exception as e:
             print(e)
-            # min = regulation.get_regulation_by_name("Tiếp nhận học sinh").min
-            # if (datetime.now().year - form_student.birth_date.data.year) < min:
-            #     return render_template("register_student.html", form_student=form_student,mse="Tuổi không phù hợp")
+            flash("Đã xảy ra lỗi khi tạo học sinh", "danger")
+            return redirect(url_for("register"))
 
-            # send_mail(subject="Thông báo nhập học ", student_name=s.profile.name, recipients=[s.profile.email])
-            flash("Đã xảy ra lỗi khi tạo học sinh", "error")  # Thêm thông báo lỗi
-            return render_template("register_student.html", form_student=form_student, profile=profile)
-        if s:
-            flash("Tạo học sinh thành công!", "success")  # Thông báo thành công
-            return redirect("/index")
-    return render_template("register_student.html", form_student=form_student, profile=profile)
+    return render_template("register_student.html", form_student=form_student)
 
+
+# import pdb
+# pdb.set_trace()
 @app.route('/acc_info', methods=['GET', 'POST'])
 @login_required
 @role_only([UserRole.STAFF, UserRole.TEACHER])
 def info_acc():
     form_account = Info_Account()
-    profile = dao.get_info_by_id(current_user.id)
-    user = current_user
+    profile = authen.get_info_by_id(current_user.id)
 
     if form_account.validate_on_submit():
-        display_profile_data(profile, form_account)
-        # Cập nhật thông tin người dùng
-        update_user_info(profile, form_account)
-
-        # Nếu là yêu cầu AJAX, trả về dữ liệu dưới dạng JSON
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'status': 'success',
-                'avatar_url': user.avatar_url
-            })
-
-        flash('Thông tin của bạn đã được cập nhật!', 'success')
+        update_acc_info(form_account)
+        db.session.refresh(current_user)
         return redirect('/acc_info')
-    display_profile_data(profile, form_account)
 
-    return render_template('acc_info.html', form_account=form_account, profile=profile , current_user=current_user)
+    flash('Thông tin tài khoản đã được cập nhật', 'success')
+    display_profile_data(profile, form_account)
+    return render_template('acc_info.html', form_account=form_account, )
+
+
+#
+# @app.route('/class/change', methods=['GET','POST'])
+# @login_required
+# @role_only([UserRole.STAFF])
+# def change_class():
+#     form_create_class = ChangeClass()
+#     form_create_class.teacher.choices = [(temp_teacher.id, temp_teacher.user.profile.name) for temp_teacher in
+#                                          teacher.get_teacher_not_presidential()]
+#     if request.method == "POST" and form_create_class.validate_on_submit():
+#         try:
+#             # if form_create_class.class_size.data > regulation.get_regulation_by_name("Sĩ số tối đa").max:
+#             #     return render_template("create_class.html", form_create_class=form_create_class, list_class=group_class.get_class(),
+#             #                student_no_class=student.student_no_class(),mse="Sĩ số lớp không phù hợp")
+#             temp_class = group_class.create_class(form_create_class)
+#         except Exception as e:
+#             redirect("/home")
+#         redirect(url_for("index"))
+#     return render_template("create_class.html", form_create_class=form_create_class, list_class=group_class.get_class(),
+#                            student_no_class=student.student_no_class())
+
+
 if __name__ == '__main__':
-    app.run(debug=True) #Lên pythonanywhere nhớ để Falsse
+    app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse
