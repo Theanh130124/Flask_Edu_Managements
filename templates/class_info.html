@@ -1,10 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'layout/base.html' %}
+{% block title %}
+    Thông tin lớp học {{class_info.name}}
+{% endblock %}
+{% block content %}
+    <!--Giao vien nao chu nhiem roi -> thi se khong hien trong combobox nay-->
+    <h1 style="text-align: center" >THÔNG TIN LỚP {{class_info.name}}</h1>
+    <div class="d-flex justify-content-between p-5">
+        <h3 id="amount" class="text-danger">Sĩ số: {{ class_info.amount }}</h3>
+    </div>
+    <table id="myTable" class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Tên học sinh</th>
+            <th scope="col">Ngày sinh</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in class_info.students %}
+            <tr>
+                <th scope="row">{{ s.student.id }}</th>
+                <td>{{ s.student.profile.name }}</td>
+                <td>{{ s.student.profile.birthday.strftime("%d/%m/%Y") }}</td>
+                <td>
+                    <button id="{{ s.student.id }}" class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>
+                </td>
+            </tr>
+        {% endfor %}
 
-</body>
-</html>
+        <tr id="add-label">
+            <th scope="row"><label for="student"></label></th>
+            <td>
+                <select class="form-select w-50" id="student" name="student">
+                    {% for s in student_no_class %}
+                        <option value="{{ s.id }}">{{ s.profile.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td></td>
+            <td>
+                <button class="btn btn-success" onclick="addRow()">Thêm</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <button onclick="save()" id="add-btn" class="btn btn-primary">Lưu</button>
+        <button onclick="goBack()" id="back-btn" class="btn btn-danger " style="margin-left:15px">Quay lại</button>
+    </div>
+    <script>
+        add = []
+        del = []
+
+        function deleteRow(button) {
+            var result = confirm("Bạn có muốn xóa học sinh này không?");
+            if (result) {
+                del.push(button.id)
+                var row = button.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                document.getElementById("amount").innerHTML = "Sĩ số: " + ({{ amount }} + add.length - del.length).toString()
+            }
+        }
+
+        function addRow() {
+            var selectElement = document.getElementById("student");
+            if (add.indexOf(selectElement.value) != -1) {
+                confirm("Học sinh đã có trong danh sách?");
+                return
+            }
+            var table = document.getElementById("myTable");
+            var lastRow = table.rows[table.rows.length - 1];
+            var newRow = table.insertRow(lastRow.rowIndex)
+            {% for s in student_no_class %}
+                var id = {{ s.id }}
+                if (id == selectElement.value) {
+                    newRow.insertCell(0).innerHTML = selectElement.value;
+                    newRow.insertCell(1).innerHTML = "{{ s.profile.name }}";
+                    newRow.insertCell(2).innerHTML = "{{ s.profile.birthday.strftime("%d/%m/%Y") }}";
+                    newRow.insertCell(3).innerHTML = `<button class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>`;
+                    add.push(selectElement.value)
+                    document.getElementById("amount").innerHTML = "Sĩ số: " + ({{ amount }} + add.length - del.length).toString()
+                }
+            {% endfor %}
+        }
+
+        function save() {
+            fetch("/api/add_student/{{ class_info.id }}", {
+                method: "post",
+                body: JSON.stringify({
+                    "list_student": add
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => res.json()).then(data_add => {
+                fetch("/api/delete_student/{{ class_info.id }}", {
+                    method: "delete",
+                    body: JSON.stringify({
+                        "list_student": del
+                    }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(res => res.json()).then(data => {
+                    if (data.status === 404 && data_add.status === 200) {
+                        confirm("Lưu thành công!");
+                        window.location.href = "/home";
+                    }
+                })
+            })
+        }
+
+        function goBack() {
+            var result = confirm("Bạn có chắc muốn quay lại trang danh sách lớp học?");
+            if (result) {
+                window.location.href = "/class/edit";  // Điều hướng về trang danh sách lớp học
+            }
+        }
+    </script>
+{% endblock %}

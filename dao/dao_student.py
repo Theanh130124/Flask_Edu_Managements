@@ -2,7 +2,7 @@ import json
 import random
 from app.models import  Student , Students_Classes ,Semester , Profile , Class
 from app import db
-from app.utils import get_academic_info
+from app.utils import get_current_year
 
 
 
@@ -71,12 +71,12 @@ def verify_student_phone_number(phone_number):
 
 def student_no_class(grade=None):
     student_had_class = db.session.query(Student.id).join(Students_Classes).join(Class).filter(
-        Class.year == get_academic_info())
+        Class.year == get_current_year())
     if grade:
         return db.session.query(Student).filter(Student.id.not_in(student_had_class)).filter(Student.grade == grade).all()
     return db.session.query(Student).filter(Student.id.not_in(student_had_class)).all()
 
 def get_list_student_no_class_by_grade(size,grade):
-    student_had_class = db.session.query(Student.id).join(Students_Classes).join(Class).filter(Class.year == get_academic_info())
+    student_had_class = db.session.query(Student.id).join(Students_Classes).join(Class).filter(Class.year == get_current_year())
     non_class_students = db.session.query(Student).filter(Student.id.not_in(student_had_class)).filter(Student.grade == grade).all()
     return random.sample(non_class_students,size)

@@ -1,0 +1,59 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+    Điều chỉnh lớp học
+{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">DANH SÁCH CÁC LỚP HỌC</h1>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Lớp</th>
+                <th scope="col">Khối</th>
+                <th scope="col">Giáo viên chủ nhiệm</th>
+                <th scope="col">Sỉ số</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in classes %}
+                <tr>
+                    <th scope="row">{{ s.id }}</th>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.grade.value }}</td>
+                    <td>{{ s.teacher.user.profile.name }}</td>
+                    <td>{{ s.amount}}</td>
+                    <td><a class="btn btn-success" href="/class/{{ s.name }}/{{ s.grade.value }}/info">Sửa</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Thông tin lớp học</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    Đây là phần nội dung chi tiết của lớp học.
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

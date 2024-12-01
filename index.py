@@ -2,9 +2,10 @@ from app.admin import *
 from app import dao, login, app
 from flask import render_template, redirect, request, flash, url_for, jsonify
 from flask_login import current_user, login_required, logout_user, login_user
-from app.dao import authen, student , regulation
-from app.dao.authen import display_profile_data, update_acc_info
-from app.dao.regulation import  get_regulation_by_type
+from app.dao import dao_authen, dao_student , dao_regulation , dao_class
+from app.dao.dao_authen import display_profile_data, update_acc_info
+from app.dao.dao_regulation import  get_regulation_by_type
+from app.dao.dao_student import student_no_class
 from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
 from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
 from decorators import role_only
@@ -17,8 +18,8 @@ import cloudinary.uploader
 @app.context_processor
 def common_attr():
     if current_user.is_authenticated:
-        profile = authen.get_info_by_id(current_user.id)
-        user = authen.load_user(current_user.id)
+        profile = dao_authen.get_info_by_id(current_user.id)
+        user = dao_authen.load_user(current_user.id)
         return {'profile': profile,
                 'user': user}
     return {}
@@ -28,7 +29,7 @@ def common_attr():
 
 @login.user_loader
 def user_load(user_id):
-    return authen.load_user(user_id)
+    return dao_authen.load_user(user_id)
 
 
 # import pdb
@@ -57,7 +58,7 @@ def login():
     if request.method == "POST" and form.SubmitFieldLogin():
         username = form.username.data
         password = form.password.data
-        user = authen.auth_user(username=username, password=password)
+        user = dao_authen.auth_user(username=username, password=password)
         if user:
             login_user(user)
             return redirect(url_for('index'))
@@ -108,7 +109,7 @@ def register():
                     return redirect(url_for("register"))
 
                 # Nếu độ tuổi hợp lệ, tạo học sinh
-                student.create_student(form_student)
+                dao_student.create_student(form_student)
                 flash("Tạo học sinh thành công!", "success")
                 return redirect(url_for("register"))
             except Exception as e:
@@ -131,7 +132,7 @@ def register():
 @role_only([UserRole.STAFF, UserRole.TEACHER])
 def info_acc():
     form_account = Info_Account()
-    profile = authen.get_info_by_id(current_user.id)
+    profile = dao_authen.get_info_by_id(current_user.id)
 
     if form_account.validate_on_submit():
         try:
@@ -170,8 +171,25 @@ def info_acc():
 @app.route("/regulations")
 @login_required
 def view_regulations():
-    regulations = regulation.get_regulations()
+    regulations = dao_regulation.get_regulations()
     return render_template('regulations.html', regulations=regulations)
+
+
+@app.route('/class/edit')
+@login_required
+@role_only([UserRole.STAFF])
+def class_edit():
+    classes = dao_class.get_class()
+    return render_template("list_class.html",classes=classes)
+
+#Edit class
+@app.route('/class/<string:name>/<int:grade>/info')
+@login_required
+@role_only([UserRole.STAFF])
+def info_class(name , grade):
+    class_info = dao_class.get_info_class_by_name(name)
+    student_no_classes = dao_student.student_no_class("KHOI"+str(grade))
+    return render_template("class_info.html", class_info=class_info,student_no_class=student_no_classes)
 
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

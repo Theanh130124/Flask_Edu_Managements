@@ -2,7 +2,7 @@ from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
 from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student
-from app import app, db
+from app import app, db, login
 from flask import redirect
 from app.controllers import hash_password
 
@@ -22,6 +22,13 @@ class LogoutView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN  # Phải có dòng sau này để người dùng STAFF không thể truy cập admin
 
+
+class LoginUserView(BaseView):
+    @expose('/')
+    def index(self):
+        return redirect('/login')
+    def is_accessible(self):
+        return not current_user.is_authenticated
 
 class SubjectAdminView(AuthenticatedView):
     column_list = ['id', 'name', 'grade', 'number_of_15p', 'number_of_45p', 'teachings']
@@ -142,5 +149,6 @@ admin.add_view(SubjectAdminView(Subject, db.session, name="Quản lý môn học
 admin.add_view(UserView(User, db.session, name='Người dùng'))
 admin.add_view(ProfileView(Profile, db.session, name="Hồ sơ"))
 admin.add_view(LogoutView(name='Đăng xuất'))
+admin.add_view(LoginUserView(name='Về trang đăng nhập người dùng'))
 
 # Fix bug đăng xuất trả về login.html

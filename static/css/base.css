@@ -87,3 +87,85 @@ height: 50px;
     background-color: #f8d7da;
     border-color: #f5c6cb;
 }
+
+/* Cải thiện bảng */
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    font-weight: bold;
+}
+
+.table tr:hover {
+    background-color: #f2f2f2;
+}
+
+.table td a {
+    text-decoration: none;
+    color: white;
+    background-color: #28a745;  /* Màu nút hành động */
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.table td a:hover {
+    background-color: #218838;
+}
+
+/* Tiêu đề */
+h1 {
+    color: #333;  /* Màu tối cho tiêu đề */
+    font-size: 36px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Tiêu đề trong modal */
+.modal-header {
+    background-color: #007bff;  /* Màu xanh dương nổi bật */
+    color: white;
+    border-radius: 8px 8px 0 0;
+    text-align: center;
+    padding: 15px;
+    font-size: 24px;  /* Tăng kích thước font tiêu đề */
+}
+
+.modal-footer button {
+    background-color: #28a745; /* Nút màu xanh */
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.modal-footer button:hover {
+    background-color: #218838;
+}
+
+.modal-title {
+    font-weight: bold;
+    font-size: 28px;
+    color: #333;  /* Tiêu đề modal sáng và nổi bật */
+}
+
+/* Modal nội dung */
+.modal-body {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+}
+
