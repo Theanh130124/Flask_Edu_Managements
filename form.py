@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
 class AdmisionStudent(FlaskForm):
     full_name = StringField("Họ và tên", validators=[InputRequired("Vui Lòng nhập họ tên học sinh"), Length(max=50)],
                             render_kw={"placeholder": "Nhập họ và tên"})
-    gender = SelectField("Giới tính", choices=[('Nam', "Nam"), ('Nư', "Nữ")],
+    gender = SelectField("Giới tính", choices=[('Nam', "Nam"), ('Nữ', "Nữ")],
                          validators=[InputRequired()],
                          render_kw={"placeholder": "Chọn giới tính"})
     birth_date = DateField("Ngày sinh", validators=[DataRequired()],
@@ -35,16 +35,15 @@ class Info_Account(FlaskForm):
     name = StringField('Họ và tên', validators=[DataRequired()], render_kw={"readonly": True})
     email = StringField('Email', validators=[DataRequired()])
     birthday = DateField('Ngày sinh', validators=[DataRequired()], render_kw={"readonly": True})
-    # Thêm ràng buộc độ tuổi ở đây từ bên quy định
-    gender = StringField('Giới tính', validators=[DataRequired()],
-                         render_kw={"disabled": True})
+    gender = StringField('Giới tính', validators=[DataRequired()], render_kw={"disabled": True})
     phone = StringField("Số điện thoại", validators=[DataRequired(), Length(max=10)])
-    address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)],
-                          )
+    address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)])
+
+    # Avatar không bắt buộc, chỉ yêu cầu chọn nếu muốn thay đổi
     avatar = FileField('Ảnh đại diện', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'Chỉ cho phép ảnh định dạng JPG, JPEG, PNG'),
-        FileRequired('Bạn cần chọn một ảnh.')
+        FileAllowed(['jpg', 'jpeg', 'png'], 'Chỉ cho phép ảnh định dạng JPG, JPEG, PNG')
     ])
+
     submit = SubmitField('Tải lên')
 
 

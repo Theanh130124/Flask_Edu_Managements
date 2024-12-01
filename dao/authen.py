@@ -31,15 +31,28 @@ def display_profile_data(profile, form_account):
 
 
 def update_acc_info(form_account):
+    try:
         profile = Profile.query.filter_by(user_id=current_user.id).first()
+
         if profile:
+            # Cập nhật phone và address
             profile.phone = form_account.phone.data
             profile.address = form_account.address.data
+
+            # Kiểm tra avatar mới
             if form_account.avatar.data:
                 avatar_file = form_account.avatar.data
                 avatar_url = upload_to_cloudinary(avatar_file)
                 if avatar_url:
-                    profile.avatar = avatar_url
+                    profile.avatar = avatar_url  # Cập nhật avatar mới
 
-            db.session.commit()
+            db.session.commit()  # Lưu thay đổi
+            print("Thông tin đã được cập nhật.")
+        else:
+            print("Không tìm thấy profile.")
+
+    except Exception as e:
+        print(f"Lỗi cập nhật thông tin: {str(e)}")
+        raise e
+
 

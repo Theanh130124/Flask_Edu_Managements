@@ -81,6 +81,7 @@ def logout_my_user():
 
 from flask import session
 
+
 @app.route('/student/register', methods=['GET', 'POST'])
 @login_required
 @role_only([UserRole.STAFF])
@@ -92,27 +93,33 @@ def register():
     min_age = regulation.min_value  # độ tuổi tối thiểu
     max_age = regulation.max_value  # độ tuổi tối đa
 
-    if request.method == "POST" and form_student.validate_on_submit():
-        try:
-            # Tính toán tuổi học sinh
-            birth_date = form_student.birth_date.data
-            current_year = datetime.now().year
-            age = current_year - birth_date.year
+    if request.method == "POST":
+        # Kiểm tra các trường hợp không hợp lệ trong form
+        if form_student.validate_on_submit():
+            try:
+                # Tính toán tuổi học sinh
+                birth_date = form_student.birth_date.data
+                current_year = datetime.now().year
+                age = current_year - birth_date.year
 
-            # Kiểm tra độ tuổi của học sinh
-            if age < min_age or age > max_age:
-                flash(f"Độ tuổi phải từ {min_age} đến {max_age}!", "danger")
+                # Kiểm tra độ tuổi của học sinh
+                if age < min_age or age > max_age:
+                    flash(f"Độ tuổi phải từ {min_age} đến {max_age}!", "danger")
+                    return redirect(url_for("register"))
+
+                # Nếu độ tuổi hợp lệ, tạo học sinh
+                student.create_student(form_student)
+                flash("Tạo học sinh thành công!", "success")
                 return redirect(url_for("register"))
+            except Exception as e:
+                flash(f"Đã xảy ra lỗi khi tạo học sinh: {e}", "danger")
+                return render_template("register_student.html", form_student=form_student)
+        else:
+            for field, errors in form_student.errors.items():
+                for error in errors:
+                    flash(error, "danger")
 
-            # Nếu độ tuổi hợp lệ, tạo học sinh
-            student.create_student(form_student)
-            flash("Tạo học sinh thành công!", "success")
-            return redirect(url_for("register"))
-
-        except Exception as e:
-            print(e)
-            flash("Đã xảy ra lỗi khi tạo học sinh", "danger")
-            return redirect(url_for("register"))
+            return render_template("register_student.html", form_student=form_student)
 
     return render_template("register_student.html", form_student=form_student)
 
@@ -127,13 +134,16 @@ def info_acc():
     profile = authen.get_info_by_id(current_user.id)
 
     if form_account.validate_on_submit():
-        update_acc_info(form_account)
-        db.session.refresh(current_user)
-        return redirect('/acc_info')
+        try:
+            update_acc_info(form_account)
+            db.session.refresh(current_user)
+            flash('Thông tin tài khoản đã được cập nhật', 'success')  # Flash thông báo thành công
+            return redirect('/acc_info')  # Điều hướng lại sau khi cập nhật thành công
+        except Exception as e:
+            flash(f'Cập nhật không thành công. Lỗi: {str(e)}', 'danger')  # Flash thông báo lỗi
 
-    flash('Thông tin tài khoản đã được cập nhật', 'success')
     display_profile_data(profile, form_account)
-    return render_template('acc_info.html', form_account=form_account, )
+    return render_template('acc_info.html', form_account=form_account)
 
 
 #
