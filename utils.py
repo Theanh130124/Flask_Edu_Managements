@@ -1,6 +1,7 @@
 from datetime import datetime
 from app import app
 import cloudinary.uploader
+from flask import flash
 from datetime import date
 
 
@@ -14,9 +15,9 @@ def get_current_year():
 
 
 
-# Thêm hàm kiểm tra User là Teacher
 
 
+#Upload ảnh
 def upload_to_cloudinary(file):
     try:
         upload_result = cloudinary.uploader.upload(file, folder="user_avatars/")
@@ -24,6 +25,10 @@ def upload_to_cloudinary(file):
     except Exception as e:
         print(f"Lỗi tải lên Cloudinary: {e}")
         return None
+#Hiển thị chi tiết lỗi
 
-
+def display_form_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(f"Lỗi ở trường {field}: {error}", 'danger')  # Hiển thị lỗi lên giao diện
 

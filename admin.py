@@ -137,7 +137,7 @@ class ClassCreateView(AuthenticatedView):
         'amount': 'Sỉ số',
         'year': 'Năm học',
         'teacher_id': 'Giáo viên chủ nhiệm',
-        'regulation': 'Quy định'
+        'regulation_id': 'Quy định'
     }
     can_edit = False
     can_view_details = True

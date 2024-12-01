@@ -33,10 +33,10 @@ class AdmisionStudent(FlaskForm):
 
 
 class Info_Account(FlaskForm):
-    name = StringField('Họ và tên', validators=[DataRequired()], render_kw={"readonly": True})
+    name = StringField('Họ và tên', validators=[DataRequired()], render_kw={"readonly": True} )
     email = StringField('Email', validators=[DataRequired()])
-    birthday = DateField('Ngày sinh', validators=[DataRequired()], render_kw={"readonly": True})
-    gender = StringField('Giới tính', validators=[DataRequired()], render_kw={"disabled": True})
+    birthday = DateField('Ngày sinh', validators=[DataRequired()], render_kw={"readonly": True}, format="%Y-%m-%d")
+    gender = SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ')], validators=[DataRequired()])
     phone = StringField("Số điện thoại", validators=[DataRequired(), Length(max=10)])
     address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)])
 
