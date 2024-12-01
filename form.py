@@ -23,11 +23,12 @@ class AdmisionStudent(FlaskForm):
     address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)],
                           render_kw={"placeholder": "Nhập địa chỉ"})
     phone_number = StringField("Số điện thoại", validators=[
-        Regexp(regex=r'^\d{10,}$', message="Vui lòng nhập chính xác số điện thoại."),
-        Length(max=10, min=10, message="Số điện thoại phải có 10 số.")
+        Regexp(regex=r'^\d{10,}$', message="Vui lòng chỉ nhập số vào số điện thoại !"),
+        Length(max=10, min=10)
     ], render_kw={"placeholder": "Nhập số điện thoại"})
     email = EmailField("Email", validators=[InputRequired(), Length(max=100)],
                        render_kw={"placeholder": "Nhập email"})
+    # Kiểm tra email tồn tại
     submit = SubmitField("Gửi")
 
 

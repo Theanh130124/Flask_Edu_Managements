@@ -2,10 +2,10 @@ from app.admin import *
 from app import dao, login, app
 from flask import render_template, redirect, request, flash, url_for, jsonify
 from flask_login import current_user, login_required, logout_user, login_user
-from app.dao import authen, student
+from app.dao import authen, student , regulation
 from app.dao.authen import display_profile_data, update_acc_info
-from app.dao.regulation import get_regulation_by_name
-from app.models import UserRole  # Phải ghi là app.models để tránh lỗi profile
+from app.dao.regulation import  get_regulation_by_type
+from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
 from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
 from decorators import role_only
 from datetime import datetime
@@ -89,9 +89,9 @@ def register():
     form_student = AdmisionStudent()
 
     # Lấy quy định độ tuổi từ regulation
-    regulation = get_regulation_by_name("Tiếp nhận học sinh")
-    min_age = regulation.min_value  # độ tuổi tối thiểu
-    max_age = regulation.max_value  # độ tuổi tối đa
+    regulation_age = get_regulation_by_type(TYPE_REGULATION.RE_AGE)
+    min_age = regulation_age.min_value  # độ tuổi tối thiểu
+    max_age = regulation_age.max_value  # độ tuổi tối đa
 
     if request.method == "POST":
         # Kiểm tra các trường hợp không hợp lệ trong form
@@ -166,6 +166,12 @@ def info_acc():
 #     return render_template("create_class.html", form_create_class=form_create_class, list_class=group_class.get_class(),
 #                            student_no_class=student.student_no_class())
 
+
+@app.route("/regulations")
+@login_required
+def view_regulations():
+    regulations = regulation.get_regulations()
+    return render_template('regulations.html', regulations=regulations)
 
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

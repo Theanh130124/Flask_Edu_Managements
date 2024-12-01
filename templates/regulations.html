@@ -1,0 +1,38 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+    Quy định nhà trường
+{% endblock %}
+{% block content %}
+    <div class="mt-3">
+        <div class="shadow py-3 px-3 bg-white mb-3">
+            <h5 style=" font-weight: bold;">Quy định về chức năng</h5>
+            <span style="color: gray;">Quản lý các quy định về các chức năng của hệ thống</span>
+        </div>
+        <div class="shadow p-3">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên quy định</th>
+                    <th scope="col">Giá trị</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in regulations %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td >{{ r.name }}</td>
+                        <td>
+                            <span >Giá trị tối thiểu:</span>
+                            <span style="color: red; font-weight: bold;">{{ r.min_value }}</span>
+                            <span> - </span>
+                            <span>Giá trị tối đa:</span>
+                            <span style="color: red; font-weight: bold;">{{ r.max_value }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

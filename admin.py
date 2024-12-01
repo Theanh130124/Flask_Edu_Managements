@@ -122,10 +122,23 @@ class ProfileView(AuthenticatedView):
     can_view_details = True
 
 
+class ClassCreateView(AuthenticatedView):
+    column_list = ['name' ,'grade','amount','year','teacher_id','regulation_id']
+    column_labels = {
+        'name': 'Tên lớp',
+        'grade': 'Khối',
+        'amount': 'Sỉ số',
+        'year': 'Năm học',
+        'teacher_id': 'Giáo viên chủ nhiệm',
+        'regulation': 'Quy định'
+    }
+    can_edit = False
+    can_view_details = True
 admin = Admin(app, name='Quản lý học sinh ', template_mode='bootstrap4')
 
 admin.add_view(RegulationsAdminView(Regulation, db.session, name="Chỉnh sửa quy định"))
-admin.add_view(SubjectAdminView(Subject, db.session, name="Danh sách môn học"))  # Thêm
+admin.add_view(ClassCreateView(Class,db.session,name="Tạo lớp học"))
+admin.add_view(SubjectAdminView(Subject, db.session, name="Quản lý môn học"))  # Thêm
 admin.add_view(UserView(User, db.session, name='Người dùng'))
 admin.add_view(ProfileView(Profile, db.session, name="Hồ sơ"))
 admin.add_view(LogoutView(name='Đăng xuất'))
