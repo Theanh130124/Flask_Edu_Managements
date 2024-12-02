@@ -10,6 +10,9 @@ background-position: right calc(.375em + .1875rem) center;
 background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
 
+.layout_title{
+background: linear-gradient(to right, #5f76e8, #7a90fb);
+}
 .invalid-feedback {
 display: none;
 width: 100%;

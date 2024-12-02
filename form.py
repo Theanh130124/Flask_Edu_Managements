@@ -29,7 +29,7 @@ class AdmisionStudent(FlaskForm):
     email = EmailField("Email", validators=[InputRequired(), Length(max=100)],
                        render_kw={"placeholder": "Nhập email"})
     # Kiểm tra email tồn tại
-    submit = SubmitField("Gửi")
+    submit = SubmitField( "Gửi" )
 
 
 class Info_Account(FlaskForm):

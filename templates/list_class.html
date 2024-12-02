@@ -3,8 +3,10 @@
     Điều chỉnh lớp học
 {% endblock %}
 {% block content %}
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">DANH SÁCH CÁC LỚP HỌC</h1>
+    <div class="container mt-5 card">
+        <div class="card-header bf-info layout_title shadow py-3 px-3 bg-white mb-3"> <h2 class="text-center mb-1 mt-1 text-white">DANH SÁCH CÁC LỚP HỌC</h2> </div>
+        <hr> <h4 style="color: red;">Năm học :</h4>
+
 
         <table class="table">
             <thead>
@@ -25,7 +27,7 @@
                     <td>{{ s.grade.value }}</td>
                     <td>{{ s.teacher.user.profile.name }}</td>
                     <td>{{ s.amount}}</td>
-                    <td><a class="btn btn-success" href="/class/{{ s.name }}/{{ s.grade.value }}/info">Sửa</a></td>
+                    <td><a class="btn btn-success" href="/class/{{ s.name }}/{{ s.grade.value }}/info">Sửa <i class="fa-solid fa-pen-to-square"></i></a></td>
                 </tr>
             {% endfor %}
             </tbody>
