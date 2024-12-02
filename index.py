@@ -2,7 +2,7 @@ from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
 from flask_login import current_user, login_required, logout_user, login_user
-from app.dao import dao_authen, dao_student, dao_regulation, dao_class
+from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification
 from app.dao.dao_authen import display_profile_data, update_acc_info
 from app.dao.dao_regulation import get_regulation_by_type
 from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
@@ -47,7 +47,8 @@ def index():
 @login_required  # Có cái này để gom user vào -> home
 @role_only([UserRole.STAFF, UserRole.TEACHER])
 def home():
-    return render_template('index.html', )  # Trang home (index.html)
+    notifications = dao_notification.load_all_notifications()
+    return render_template('index.html',notifications=notifications )  # Trang home (index.html)
 
 
 @app.route('/login', methods=['GET', 'POST'])

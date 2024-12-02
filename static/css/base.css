@@ -11,7 +11,7 @@ background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
 
 .layout_title{
-background: linear-gradient(to right, #5f76e8, #7a90fb);
+background: linear-gradient(to right, #5f76e8,  #5f76e8);
 }
 .invalid-feedback {
 display: none;

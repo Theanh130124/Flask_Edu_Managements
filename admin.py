@@ -1,7 +1,7 @@
 from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
-from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student
+from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification
 from app import app, db, login
 from flask import redirect
 from app.controllers import hash_password
@@ -141,6 +141,14 @@ class ClassCreateView(AuthenticatedView):
     }
     can_edit = False
     can_view_details = True
+class NotificationView(AuthenticatedView):
+    column_list = ['subject','content','created_at']
+    column_labels =  {
+        'subject':'Tiêu đề thông báo',
+        'content':'Nội dung',
+        'create_date':'Thời gian tạo'
+    }
+    can_view_details = True
 admin = Admin(app, name='Quản lý học sinh ', template_mode='bootstrap4')
 
 admin.add_view(RegulationsAdminView(Regulation, db.session, name="Chỉnh sửa quy định"))
@@ -148,6 +156,7 @@ admin.add_view(ClassCreateView(Class,db.session,name="Tạo lớp học"))
 admin.add_view(SubjectAdminView(Subject, db.session, name="Quản lý môn học"))  # Thêm
 admin.add_view(UserView(User, db.session, name='Người dùng'))
 admin.add_view(ProfileView(Profile, db.session, name="Hồ sơ"))
+admin.add_view(NotificationView(Notification , db.session,name="Quản lý thông báo"))
 admin.add_view(LogoutView(name='Đăng xuất'))
 admin.add_view(LoginUserView(name='Về trang đăng nhập người dùng'))
 

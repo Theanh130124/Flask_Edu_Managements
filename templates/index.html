@@ -1,33 +1,48 @@
 {% extends 'layout/base.html' %}
 {% block title %}
-    QUẢN LÝ HỌC SINH
+QUẢN LÝ HỌC SINH
 {% endblock %}
 {% block content %}
-    <div class="container  text-center">
-        <h1 class="display-5 fw-bold">CÁC THÔNG BÁO ĐƯỢC CẬP NHẬP TẠI ĐÂY </h1>
 
-    </div>
-    <div class="container ">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
 
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
 
-                            <div class="content">
-
-                            </div>
-                        </div>
-                        <div class="text-end px-3 pb-1">
-
-                            <p class="align-text-bottom m-0">
-                                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-                            </p>
-                        </div>
+<div class="container ">
+    <div class="row">
+        <div class="col-12 align-seft-center">
+            <h4 class="page-title text-truncate text-dark font-weight-medium mb-1">
+                Tin tức/Thông báo dành riêng cho bạn
+            </h4>
+            <div class="d-flex align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0 p-0">
+                        <li class="breadcrumb-item">
+                            <a href="#" class="text-muted">Các tin tức/thông báo chỉ liên quan đến bạn</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        {% for n in notifications %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Thông báo: {{ n.subject }}</h5>
+                    <div class="content">
+                        <p>{{ n.content }}</p>
                     </div>
                 </div>
+                <div class="text-end px-3 pb-1">
 
+                    <p class="align-text-bottom m-0">
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+                        <script>
+                            document.write(moment("{{ n.created_at }}").locale('vi').fromNow())
+                        </script>
+                    </p>
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

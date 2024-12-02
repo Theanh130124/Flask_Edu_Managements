@@ -202,7 +202,7 @@ class Notification(BaseModel):
     subject = Column(String(200),nullable=False)
     content = Column(Text,nullable=False)
     created_at = Column(DateTime, default=datetime.now())
-    admin_id = Column(Integer, ForeignKey(Admin.id), nullable=False)
+    admin_id = Column(Integer, ForeignKey(Admin.id))
 
 if __name__ == "__main__":
     with app.app_context():

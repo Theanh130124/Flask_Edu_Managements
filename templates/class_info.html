@@ -10,7 +10,7 @@
     </div>
     <table id="myTable" class="table">
         <thead>
-        <tr>
+        <tr class="layout_title text-white">
             <th scope="col">ID</th>
             <th scope="col">Tên học sinh</th>
             <th scope="col">Ngày sinh</th>
@@ -19,8 +19,8 @@
         </thead>
         <tbody>
         {% for s in class_info.students %}
-            <tr>
-                <th scope="row">{{ s.student.id }}</th>
+            <tr >
+                <th  scope="row">{{ s.student.id }}</th>
                 <td>{{ s.student.profile.name }}</td>
                 <td>{{ s.student.profile.birthday.strftime("%d/%m/%Y") }}</td>
                 <td>
