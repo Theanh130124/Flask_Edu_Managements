@@ -20,8 +20,8 @@ babel = Babel(app)
 cloudinary.config(
     cloud_name="dxiawzgnz",
     api_key="916324835836949",
-    api_secret="YOUR_API_SECRET",
-    secure=True,
+    api_secret="it9HP_2TUJjIHLSshkbm0BYA5qE",
+    # secure=True,
 )
 db = SQLAlchemy(app)
 login = LoginManager(app)
