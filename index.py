@@ -2,10 +2,11 @@ from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
 from flask_login import current_user, login_required, logout_user, login_user
-from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification
+from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification , dao_semester
 from app.dao.dao_authen import display_profile_data, update_acc_info
 from app.dao.dao_regulation import get_regulation_by_type
 from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
+from app.utils import get_current_semester
 from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
 from decorators import role_only
 from datetime import datetime
@@ -19,8 +20,12 @@ def common_attr():
     if current_user.is_authenticated:
         profile = dao_authen.get_info_by_id(current_user.id)
         user = dao_authen.load_user(current_user.id)
+        semester_name, year = get_current_semester()
+        semester = dao_semester.get_or_create_semester(semester_name, year)
         return {'profile': profile,
-                'user': user}
+                'user': user,
+                'semester_name':semester.semester_name,
+                'year':semester.year,}
     return {}
 
 
@@ -153,7 +158,9 @@ def info_acc():
 @login_required
 def view_regulations():
     regulations = dao_regulation.get_regulations()
-    return render_template('regulations.html', regulations=regulations)
+
+
+    return render_template('regulations.html', regulations=regulations )
 
 
 @app.route('/class/edit')

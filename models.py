@@ -148,6 +148,12 @@ class Semester(BaseModel):
     semester_name = Column(String(50), nullable=False)
     year = Column(Integer, default=datetime.now().year)
     teachings = relationship('Teaching', backref='semester', lazy=True)
+#1 năm không thể 2 học kì trùng name
+    __table_args__ = (
+        db.UniqueConstraint('semester_name', 'year', name='unique_semester_year'),
+    )
+    def __str__(self):
+        return f"< {self.semester_name} - {self.year}"
 
 
 class Teaching(db.Model):

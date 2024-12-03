@@ -36,13 +36,14 @@ class Info_Account(FlaskForm):
     name = StringField('Họ và tên', validators=[DataRequired()], render_kw={"readonly": True} )
     email = StringField('Email', validators=[DataRequired()])
     birthday = DateField('Ngày sinh', validators=[DataRequired()], render_kw={"readonly": True}, format="%Y-%m-%d")
-    gender = SelectField('Giới tính', choices=[('Nam', 'Nam'), ('Nữ', 'Nữ')], validators=[DataRequired()])
+    gender = StringField('Giới tính', validators=[DataRequired()], render_kw={"disabled": True})
     phone = StringField("Số điện thoại", validators=[DataRequired(), Length(max=10)])
     address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)])
 
     # Avatar không bắt buộc, chỉ yêu cầu chọn nếu muốn thay đổi
     avatar = FileField('Ảnh đại diện', validators=[
-        FileAllowed(['jpg', 'jpeg', 'png'], 'Chỉ cho phép ảnh định dạng JPG, JPEG, PNG')
+        FileAllowed(['jpg', 'jpeg', 'png'], 'Chỉ cho phép ảnh định dạng JPG, JPEG, PNG'),
+        FileRequired('Bạn cần chọn một ảnh.')
     ])
 
     submit = SubmitField('Tải lên')

@@ -18,10 +18,9 @@ app.config['BABEL_SUPPOTED_LOCALES'] = ['en' ,'vi']
 
 babel = Babel(app)
 cloudinary.config(
-    cloud_name="dxiawzgnz",
-    api_key="916324835836949",
-    api_secret="it9HP_2TUJjIHLSshkbm0BYA5qE",
-    # secure=True,
+    cloud_name="dp9lw5n5g",
+    api_key="794682182282692",
+    api_secret="QKmsUnjc9uwBfY9VYb4dxoyWDcw"
 )
 db = SQLAlchemy(app)
 login = LoginManager(app)
