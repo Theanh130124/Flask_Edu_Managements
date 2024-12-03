@@ -4,45 +4,95 @@ QUẢN LÝ HỌC SINH
 {% endblock %}
 {% block content %}
 
-
-
-<div class="container ">
-    <div class="row">
-        <div class="col-12 align-seft-center">
-            <h4 class="page-title text-truncate text-dark font-weight-medium mb-1">
-                Tin tức/Thông báo dành riêng cho bạn
-            </h4>
-            <div class="d-flex align-items-center">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb m-0 p-0">
-                        <li class="breadcrumb-item">
-                            <a href="#" class="text-muted">Các tin tức/thông báo chỉ liên quan đến bạn</a>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-        {% for n in notifications %}
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Thông báo: {{ n.subject }}</h5>
-                    <div class="content">
-                        <p>{{ n.content }}</p>
-                    </div>
-                </div>
-                <div class="text-end px-3 pb-1">
-
-                    <p class="align-text-bottom m-0">
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-                        <script>
-                            document.write(moment("{{ n.created_at }}").locale('vi').fromNow())
-                        </script>
-                    </p>
+<div class="container page-wrapper" style="display:block;">
+    <!-- Page Breadcrumb -->
+    <div class="page-breadcrumb">
+        <div class="row">
+            <div class="col-12 text-center mt-5 mb-3">
+                <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">
+                    Tin tức/Thông báo dành riêng cho bạn
+                </h3>
+                <div class="d-flex align-items-center justify-content-center">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb m-0 p-0">
+                            <li class="breadcrumb-item">
+                                <a href="#" class="text-muted">Các tin tức/thông báo chỉ liên quan đến bạn</a>
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="col-12 text-center">
+            <hr class="my-4">
+        </div>
+
+       {% for n in notifications %}
+    <div class="col-md-12 col-sm-12 mb-4">
+         <div class="card h-100 shadow-sm table dataTables_wrapper table-hover" id="gird_wrapper">
+            <div class="card-body">
+                <h5 class="card-title text-primary">{{ n.subject }}</h5>
+                <div class="content">
+                    <p class="card-text">{{ n.content }}</p>
+                </div>
+            </div>
+            <div class="text-end px-3 pb-1">
+                <p class="align-text-bottom m-0 text-muted">
+                    <span class="text-danger">Ngày tạo: </span>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/vi.min.js"></script>
+                    <script>
+                        moment.locale('vi');
+                        document.write(moment("{{ n.created_at }}").fromNow());
+                    </script>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- Phân trang -->
+<div class="pagination justify-content-center ">
+    <ul class="pagination justify-content-center">
+        {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('home', page=current_page - 1) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo; Trang trước</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; Trang trước</span>
+            </li>
+        {% endif %}
+
+        <!-- Các trang số -->
+        {% for page_num in range(1, total_pages + 1) %}
+            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+            </li>
         {% endfor %}
+
+        {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('home', page=current_page + 1) }}" aria-label="Next">
+                    <span aria-hidden="true">Trang tiếp theo &raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Trang tiếp theo &raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
     </div>
 </div>
+
+
+
 {% endblock %}

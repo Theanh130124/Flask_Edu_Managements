@@ -1,16 +1,15 @@
 <header class="header">
     <div class="container-fluid pt-2 pb-2">
         <div class="d-flex justify-content-between">
-<!--            <h3 class="navbar-brand text-white" style="margin-left: 20px">QUẢN LÝ HỌC SINH </h3>-->
-            <img  class="navbar-brand text-white logo"  src="https://sis.ou.edu.vn/theme/sisv2/assets/logo.png" alt="Logo Trường">
+            <img class="navbar-brand text-white logo" src="https://sis.ou.edu.vn/theme/sisv2/assets/logo.png" alt="Logo Trường">
 
             <!-- Dropdown User Info -->
-            <div class="dropdown d-flex align-items-center">
+            <div class="dropdown d-flex align-items-center hover-dropdown">
                 <!-- Tên người dùng và Avatar -->
                 <button class="btn btn-link text-white dropdown-toggle d-flex align-items-center"
                         type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="mr-2" style="font-size: 1rem;">  {{ profile.name }}</span>
-                    <img src="{{ current_user.avatar }}" alt="Avatar"  class="rounded-circle " style="width: 40px; height: 40px; object-fit: cover;">
+                    <h4 class="mr-4" style="font-size: 1rem; text-decoration: none;">{{ profile.name }}</h4> <!-- Đảm bảo không có gạch chân -->
+                    <img src="{{ current_user.avatar }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                 </button>
 
                 <!-- Menu Dropdown -->
@@ -22,11 +21,10 @@
                         <a class="dropdown-item" href="#">Vai trò: {{ current_user.user_role.name }}</a>
                     </li>
                     <li>
-                        <a class="dropdown-item text-danger" href="/logout"> <i class="fa-solid fa-power-off " style="margin-right: 4px"></i>Đăng xuất</a>
+                        <a class="dropdown-item text-danger" href="/logout"> <i class="fa-solid fa-power-off" style="margin-right: 4px"></i>Đăng xuất</a>
                     </li>
                 </ul>
             </div>
-
         </div>
     </div>
 </header>

@@ -1,3 +1,5 @@
+import math
+
 from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
@@ -52,8 +54,11 @@ def index():
 @login_required  # Có cái này để gom user vào -> home
 @role_only([UserRole.STAFF, UserRole.TEACHER])
 def home():
-    notifications = dao_notification.load_all_notifications()
-    return render_template('index.html',notifications=notifications )  # Trang home (index.html)
+    page = request.args.get('page', 1 , type=int)
+    notifications= dao_notification.load_all_notifications(page=page)
+    total = dao_notification.count_notifications()
+    return render_template('index.html', notifications=notifications, current_page=page,
+                           total_pages=math.ceil(total/app.config["PAGE_SIZE_NOTIFICATIONS"]) )  # Trang home (index.html)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -158,7 +163,6 @@ def info_acc():
 @login_required
 def view_regulations():
     regulations = dao_regulation.get_regulations()
-
 
     return render_template('regulations.html', regulations=regulations )
 

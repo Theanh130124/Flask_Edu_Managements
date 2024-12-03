@@ -1,46 +1,70 @@
-body{
-font-family: Arial, sans-serif;
-}
-.form-control.is-invalid {
-border-color: #dc3545;
-padding-right: calc(1.5em + .75rem);
-background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
-background-repeat: no-repeat;
-background-position: right calc(.375em + .1875rem) center;
-background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+/* Đặt font cho toàn bộ body */
+body {
+    font-family: Arial, sans-serif;
 }
 
-.layout_title{
-background: linear-gradient(to right, #5f76e8,  #5f76e8);
+/* Hiệu ứng khi input bị lỗi */
+.form-control.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + .75rem);
+    background-image: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right calc(.375em + .1875rem) center;
+    background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
+
+/* Các layout title với hiệu ứng gradient */
+.layout_title {
+    background: linear-gradient(to right, #5f76e8, #5f76e8);
+}
+.layout_title_two {
+    background: linear-gradient(to right, #22ca80, #22ca80);
+}
+.layout_title_three {
+    background: linear-gradient(to right, #479df8, #51a6fb);
+}
+
+/* Thông báo lỗi khi nhập */
 .invalid-feedback {
-display: none;
-width: 100%;
-margin-top: .25rem;
-font-size: 80%;
-color: #dc3545;
+    display: none;
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #dc3545;
 }
 
 .form-control.is-invalid ~ .invalid-feedback {
-display: block;
+    display: block;
 }
+
+/* Màu sắc khi hover vào các mục trong nav */
 .nav-item:hover {
-background-color: #aaaaaa4c;
-border-bottom: solid 1px white;
-border-radius: 3px;
+    background-color: #aaaaaa4c;
+    border-bottom: solid 1px white;
+    border-radius: 3px;
 }
 
+/* Icon trong header khi hover */
 .icon-header:hover {
-background-color: #aaaaaa4c;
-border-radius: 50%;
-}
-.header{
-background: linear-gradient(to right,  #0165d9, #51a6fa);
+    background-color: #aaaaaa4c;
+    border-radius: 50%;
 }
 
-.footer_home{
-background: linear-gradient(to right,  #0165d9 ,#51a6fa);
+/* Header với gradient màu */
+.header {
+    background: linear-gradient(to right, #0165d9, #51a6fa);
 }
+
+/* Footer với gradient màu */
+.footer_home {
+    background: linear-gradient(to right, #0165d9, #51a6fa);
+}
+
+/* Dropdown container để tạo ra hiệu ứng thả từ avatar */
+.dropdown {
+    position: relative; /* Đảm bảo dropdown menu sẽ thả xuống từ vị trí của avatar */
+}
+
 /* Dropdown button hover effect */
 .dropdown-toggle:hover {
     color: #ffd700;  /* Màu vàng khi hover vào tên và avatar */
@@ -48,10 +72,22 @@ background: linear-gradient(to right,  #0165d9 ,#51a6fa);
 
 /* Dropdown menu */
 .dropdown-menu {
+    position: absolute; /* Đặt menu dropdown ở vị trí tuyệt đối */
+    top: 100%; /* Thả xuống dưới avatar */
+    left: 0; /* Căn lề trái với avatar */
     background-color: #343a40;  /* Màu nền tối cho menu */
     border-radius: 8px;          /* Bo tròn góc menu */
-    min-width: 220px;            /* Đảm bảo chiều rộng đủ lớn */
+    min-width: 220px;            /* Chiều rộng đủ lớn */
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Shadow cho menu */
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease; /* Thêm hiệu ứng trượt */
+}
+
+/* Hiển thị dropdown khi hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
 }
 
 /* Hover item trong dropdown */
@@ -66,19 +102,22 @@ background: linear-gradient(to right,  #0165d9 ,#51a6fa);
     color: white;               /* Đảm bảo chữ trắng */
 }
 
-
-/* Responsive Design - dropdown trong các màn hình nhỏ */
+/* Responsive Design cho dropdown */
 @media (max-width: 768px) {
     .dropdown-menu {
         width: 100%; /* Chiều rộng toàn bộ khi ở màn hình nhỏ */
     }
 }
-.logo{
-margin-left: 20px;
-width:220px ;
-height: 50px;
 
+
+/* Logo với chiều rộng và chiều cao */
+.logo {
+    margin-left: 20px;
+    width: 220px;
+    height: 50px;
 }
+
+/* Cải thiện cảnh báo thành công và lỗi */
 .alert-success {
     color: #155724;
     background-color: #d4edda;
@@ -158,13 +197,14 @@ h1 {
     background-color: #218838;
 }
 
+/* Tiêu đề modal */
 .modal-title {
     font-weight: bold;
     font-size: 28px;
     color: #333;  /* Tiêu đề modal sáng và nổi bật */
 }
 
-/* Modal nội dung */
+/* Nội dung modal */
 .modal-body {
     padding: 20px;
     text-align: center;
@@ -172,3 +212,9 @@ h1 {
     color: #555;
 }
 
+.pagination a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
