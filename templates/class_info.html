@@ -3,11 +3,13 @@
     Thông tin lớp học {{class_info.name}}
 {% endblock %}
 {% block content %}
+    <div class="container mt-5 card">
     <!--Giao vien nao chu nhiem roi -> thi se khong hien trong combobox nay-->
-    <h1 style="text-align: center" >THÔNG TIN LỚP {{class_info.name}}</h1>
-    <div class="d-flex justify-content-between p-5">
-        <h3 id="amount" class="text-danger">Sĩ số: {{ class_info.amount }}</h3>
-    </div>
+   <div class="card-header bf-info layout_title shadow py-3 px-3 bg-white mb-3">  <span  style="font-weight:bold; font-size:20px;" class="text-center mb-1 mt-1 text-white"><i class="fa fa-list-alt"></i> DANH SÁCH LỚP  {{class_info.name}}</span> </div>
+        <hr> <span style="color: red; font-weight:bold; font-size:20px;">Năm học : {{year}}-{{year+1}}  ({{semester_name}})</span>
+        <div class="bg-4" style="font-size:16px;">
+        <span style="font-size:16px;  font-weight:bold; " id="amount" class="badge bg-success ">Sĩ số: {{ class_info.amount }}</span>
+        </div>
     <table id="myTable" class="table">
         <thead>
         <tr class="layout_title text-white">
@@ -49,6 +51,7 @@
         <button onclick="save()" id="add-btn" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i> Lưu</button>
         <button onclick="goBack()" id="back-btn" class="btn btn-danger " style="margin-left:15px">Quay lại <i class="fa-solid fa-reply"></i></button>
     </div>
+        </div>
     <script>
         add = []
         del = []

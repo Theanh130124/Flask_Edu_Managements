@@ -66,7 +66,7 @@ class User(UserMixin, BaseModel):
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), default=UserRole.STAFF)
     active = Column(Boolean, default=True)
-    avatar = Column(String(255), nullable=False, default="https://res.cloudinary.com/dxiawzgnz/image/upload/v1732632586/pfvvxablnkaeqmmbqeit.png")
+    avatar = Column(String(255), default="https://res.cloudinary.com/dxiawzgnz/image/upload/v1732632586/pfvvxablnkaeqmmbqeit.png")
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True, nullable=False)
     profile = relationship("Profile", backref="user", lazy=True, uselist=False)
 

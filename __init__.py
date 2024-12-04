@@ -16,6 +16,8 @@ app.config['SECRET_KEY'] = '@#$@#$!#$!@#$!@%@#%$@##$TheAnh'
 app.config['BABEL_DEFAULT_LOCALE'] = 'vi'
 app.config['BABEL_SUPPOTED_LOCALES'] = ['en' ,'vi']
 app.config['PAGE_SIZE_NOTIFICATIONS'] = 3
+app.config['PAGE_SIZE_REGULATIONS'] = 5 #1 trang 5 quy định
+app.config['PAGE_SIZE_LIST_CLASS'] = 6
 
 babel = Babel(app)
 cloudinary.config(

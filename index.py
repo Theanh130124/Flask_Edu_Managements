@@ -162,9 +162,11 @@ def info_acc():
 @app.route("/regulations")
 @login_required
 def view_regulations():
-    regulations = dao_regulation.get_regulations()
-
-    return render_template('regulations.html', regulations=regulations )
+    page = request.args.get('page' , 1 , type=int)
+    regulations = dao_regulation.get_regulations(page=page)
+    total = dao_regulation.count_regulations()
+    return render_template('regulations.html', regulations=regulations , current_page = page ,
+                           total_pages=math.ceil(total / app.config["PAGE_SIZE_REGULATIONS"]))
 
 
 @app.route('/class/edit')
