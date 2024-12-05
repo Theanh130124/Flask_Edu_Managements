@@ -1,0 +1,187 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+    Quản lý học sinh
+{% endblock %}
+{% block content %}
+    <div class="alert alert-danger  align-items-center" id="alterMessage" role="alert" style="display: none">
+        <i class="fa-solid fa-circle-exclamation fs-5" style="color:yellow"></i>
+        <div id="message-error" style="margin-left: 10px;">
+        </div>
+    </div>
+    <div class="px-2"
+         style="font-size: 20px; gap: 10px; background-color: #cdd9e7; color: #2c5789; font-weight: bold;">
+
+        <p>Nhập điểm từ hệ thống</p>
+        <div class="ms-auto d-flex justify-content-between" style="gap: 10px;">
+            <div class="d-flex align-items-center" style="gap:20px;color:#333;">
+                <p class="name_class">
+                    Lớp: </p>
+                <p>Môn học: </p>
+                <p>Kì học: </p>
+            </div>
+            <div class="action">
+                <button onclick="save()" class="btn btn-success" id="updateButton">Lưu điểm
+                </button>
+                <button class="btn btn-primary" id="exportButton" >Xuất file excel</button>
+                <button class="btn btn-primary" id="exportAvgScore">Xuất điểm trung bình</button>
+            </div>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên Học Sinh</th>
+            <th>Điểm 15p</th>
+            <th>Điểm 1 Tiết</th>
+            <th>Điểm Thi</th>
+            <th class="action_deleted"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+    </table>
+    <script src="{{ url_for('static', filename='js/score.js') }}"></script>
+    <script>
+        input = document.getElementsByTagName("input")
+        for (const i of input) {
+            if (i.value !== "") {
+                i.disabled = true;
+            }
+        }
+
+        function save() {
+            score = []
+            input = document.getElementsByTagName("input")
+            for (const i of input) {
+                if (i.value !== "" && i.disabled === false) {
+                    score.push({
+                        "id": i.id,
+                        "type": i.className.slice(0, -2),
+                        "points": i.value,
+                        "count": i.className.slice(-1)
+                    })
+                }
+            }
+            fetch("/api/{{ teach_plan.id }}/score", {
+                method: "post",
+                body: JSON.stringify({
+                    "list_score": score
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => res.json()).then(data => {
+                if (data.status === 200) {
+                    confirm("Lưu thành công!");
+                    window.location.href = "/home";
+                }
+            })
+        }
+
+        function edit(button) {
+            input = document.getElementsByTagName("input")
+            for (const i of input) {
+                if (i.id === button.id.slice(9)) {
+                    i.disabled = !i.disabled
+                }
+            }
+            if (button.innerHTML === "Hủy") {
+                button.innerHTML = "Sửa"
+                document.querySelector(`#btn-save-${button.id.slice(9)}`).setAttribute("hidden", "hidden");
+            } else {
+                button.innerHTML = "Hủy"
+                document.querySelector(`#btn-save-${button.id.slice(9)}`).removeAttribute("hidden")
+            }
+        }
+        function save_edit(button){
+            update = []
+            input = document.getElementsByTagName("input")
+            for (const i of input) {
+                if (i.id === button.id.slice(9) && i.disabled === false) {
+                    update.push({
+                        "id": i.id,
+                        "type": i.className.slice(0, -2),
+                        "points": i.value,
+                        "count": i.className.slice(-1)
+                    })
+
+                }
+            }
+            fetch("/api/{{ teach_plan.id }}/score", {
+                method: "put",
+                body: JSON.stringify({
+                    "list_score": update
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => res.json()).then(data => {
+                if (data.status === 200) {
+                    confirm("Lưu thành công!");
+                    window.location.reload()
+                }
+            })
+        }
+
+        function extractClassName() {
+            const classNameElement = document.querySelector('.name_class');
+            if (classNameElement) {
+                return classNameElement.textContent.trim();
+            } else {
+                return 'Unknown';
+            }
+        }
+
+        function convertObjectToArray(data) {
+            return data.map(item => [item.student_id, item.student_name, item.avg_score]);
+        }
+
+        function exportToExcel(data, header, fileName) {
+            const ws = XLSX.utils.aoa_to_sheet([...header, ...data]); // Concatenate header with data
+
+            const titleCellStyle = {font: {bold: true, sz: 20}, alignment: {horizontal: 'center'}};
+            const titleCellRef = XLSX.utils.encode_cell({c: 0, r: 0});
+            if (!ws[titleCellRef]) ws[titleCellRef] = {};
+            ws[titleCellRef].v = header[0][0];
+            ws[titleCellRef].s = titleCellStyle;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+            const wscols = header[header.length - 1].map((_, index) => ({wpx: 100}));
+            ws['!cols'] = wscols;
+
+            XLSX.writeFile(wb, fileName);
+        }
+
+        const year = (new Date().getFullYear() - 1).toString()
+        console.log(year)
+        document.getElementById("exportAvgScore").addEventListener("click", function () {
+            const semesterId = "{{ teach_plan.semester_id }}";
+            const classId = "{{ teach_plan.class_id }}";
+            const subjectId = "{{ teach_plan.teacher_subject_id }}";
+
+            fetch(`/api/${semesterId}/${classId}/${subjectId}/avg_score`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    const className = extractClassName()
+                    const dataArray = convertObjectToArray(data);
+                    const header = [
+                        ["BẢNG ĐIỂM TRUNG BÌNH MÔN HỌC"], // Title row
+                        [`Năm Học = ${year} `],
+                        ["Lớp Học : " +  className],
+                        ["STT", "Họ và Tên", `Điểm TB học kì ${semesterId}`] // Data header row
+                    ];
+                    exportToExcel(dataArray, header, 'average_scores.xlsx');
+                })
+                .catch(error => console.error('Error fetching the average score:', error));
+        });
+
+
+
+
+
+    </script>
+{% endblock %}

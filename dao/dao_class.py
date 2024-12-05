@@ -1,17 +1,19 @@
-from app.models import Class ,Teacher ,Students_Classes
+from app.models import Class, Students_Classes, User, UserRole
 from app import db , utils , app
 from app.dao import  dao_student
 
 
 def get_class(page =1):
-    classes = db.session.query(Class).join(Teacher).filter(Class.year.__eq__(utils.get_current_year()))
+    classes = db.session.query(Class).join(User, Class.teacher_id == User.id).filter(Class.year == utils.get_current_year(), User.user_role == UserRole.TEACHER)
     page_size = app.config['PAGE_SIZE_DETAIL_CLASS']
     start = (page -1) * page_size
     classes = classes.slice(start , start + page_size)
     return classes.all()
+
+
 # Kiểm tra xem có viết trùng tên cái dưới đc không
 def count_class_not_grade(grade=None):
-    query = db.session.query(Class).join(Teacher).filter(Class.year == utils.get_current_year())
+    query = db.session.query(Class).join(User).filter(Class.year == utils.get_current_year())
     if grade is not None:
         query = query.filter(Class.grade != grade)
     return query.count()
@@ -39,5 +41,9 @@ def get_info_class_by_name(name):
     return db.session.query(Class).filter(Class.name == name, Class.year == utils.get_current_year()).first()
 
 
-
+def teacher_name(teacher_id):
+        teacher = User.query.get(teacher_id)
+        if teacher:
+            return teacher.profie.name
+        return None
 

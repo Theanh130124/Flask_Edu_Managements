@@ -8,3 +8,4 @@ def get_or_create_semester(semester_name, year):
         db.session.add(semester)
         db.session.commit()
     return semester
+

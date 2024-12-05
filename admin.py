@@ -1,7 +1,7 @@
 from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
-from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification
+from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification , Semester
 from app import app, db, login , utils
 from flask import redirect
 from app.controllers import hash_password
@@ -48,11 +48,16 @@ class SubjectAdminView(AuthenticatedView):
     ]
     can_view_details = True
 
-    # Format hiển thị cột 'teachings'
     def format_teachings(view, context, model, name):
         if model.teachings:
-            return ', '.join(
-                [f'Lớp: {t.class_id}, Học kỳ: {t.semester_id}, Giáo viên: {t.teacher_id}' for t in model.teachings])
+            result = []
+            for teaching in model.teachings:
+                class_obj = Class.query.get(teaching.class_id)
+                semester_obj = Semester.query.get(teaching.semester_id)
+                teacher_obj = User.query.get(teaching.teacher_id)
+                result.append(
+                    f'Lớp: {class_obj.name}, {semester_obj.semester_name}, Giáo viên: {teacher_obj.profile.name}')
+            return ', '.join(result)
         return 'Chưa áp dụng'
 
     column_formatters = {
@@ -107,7 +112,6 @@ class UserView(AuthenticatedView):
             model.password = hash_password(form.password.data)
         elif form.password.data:
             model.password = hash_password(form.password.data)
-        utils.on_model_change_user(model , form , is_created)
         return super().on_model_change(form, model, is_created)
 
 class ProfileView(AuthenticatedView):
@@ -130,23 +134,29 @@ class ProfileView(AuthenticatedView):
 
 
 class ClassCreateView(AuthenticatedView):
-    column_list = ['name' ,'grade','amount','year','teacher_id','regulation_id']
+    column_list = ['name' ,'grade','amount','year']
     column_labels = {
         'name': 'Tên lớp',
         'grade': 'Khối',
         'amount': 'Sỉ số',
         'year': 'Năm học',
-        'teacher_id': 'Giáo viên chủ nhiệm',
-        'regulation_id': 'Quy định'
+
+
+
     }
     can_edit = False
     can_view_details = True
+
+
+
+
+
 class NotificationView(AuthenticatedView):
     column_list = ['subject','content','created_at']
     column_labels =  {
         'subject':'Tiêu đề thông báo',
         'content':'Nội dung',
-        'create_date':'Thời gian tạo'
+        'created_at':'Thời gian tạo'
     }
     can_view_details = True
 admin = Admin(app, name='Quản lý học sinh ', template_mode='bootstrap4')

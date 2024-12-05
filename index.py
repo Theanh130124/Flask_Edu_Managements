@@ -196,6 +196,17 @@ def info_class(name, grade):
 @role_only([UserRole.TEACHER])
 def input_grade():
     profile = dao_authen.get_info_by_id(current_user.id)
-    return render_template("input_score.html", teaching =dao_teacher.get_teaching_of_teacher(1) )
+    # Fix lại chổ id vào
+    return render_template("input_score.html", teaching =dao_teacher.get_teaching_of_teacher(current_user.id) )
+
+
+
+
+@app.route("/grade/input/<teach_plan_id>/score")
+@login_required
+@role_only([UserRole.TEACHER])
+def input_grade_subject(teach_plan_id):
+    teach_plan = dao_teacher.get_teaching_by_id(teach_plan_id)
+    return render_template("input_score_subject.html", can_edit=dao_teacher.can_edit_exam, get_score=dao_teacher.get_score_by_student_id,teach_plan=teach_plan)
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

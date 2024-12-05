@@ -1,5 +1,6 @@
 from datetime import datetime , date
 
+
 from flask_login import UserMixin
 from sqlalchemy.dialects.mssql.information_schema import views
 
@@ -60,6 +61,10 @@ class Profile(BaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def teacher_name(self):
+        return self.teacher.username if self.teacher else "Chưa có giáo viên"
+
 
 class User(UserMixin, BaseModel):
     username = Column(String(50), unique=True, nullable=False)
@@ -70,23 +75,13 @@ class User(UserMixin, BaseModel):
     profile_id = Column(Integer, ForeignKey("profile.id"), unique=True, nullable=False)
     profile = relationship("Profile", backref="user", lazy=True, uselist=False)
 
-
-
-
-class Staff(BaseModel):
-    user = relationship("User", backref="staff", lazy=True)
-    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
-
-
-class Teacher(BaseModel):
+#Của GVCN
     class_teach = relationship("Class", backref="teacher", lazy=True)
-    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
-    user = relationship("User", backref="teacher", lazy=True)
-
-class Admin(BaseModel):
-    user_id = Column(Integer, ForeignKey("user.id"), unique=True, nullable=False)
-    user = relationship("User", backref="admin", lazy=True)
     notifications = relationship('Notification', backref="user", lazy=True)
+
+
+
+
 
 
 class Subject(BaseModel):
@@ -101,13 +96,15 @@ class Subject(BaseModel):
         CheckConstraint("number_of_45p >= 0 AND number_of_45p <=3 ", name="check_number_of_45p"),
     )
 
+
+
 class Class(BaseModel):
     grade = Column(Enum(GRADE))
     name = Column(String(10), nullable=False)
     amount = Column(Integer, default=0)
     year = Column(Integer, default=datetime.now().year)
-    # Giáo viên chủ nhiệm
-    teacher_id = Column(Integer, ForeignKey(Teacher.id),
+    # 1 lớp chỉ có 1 Giáo viên chủ nhiệm
+    teacher_id = Column(Integer, ForeignKey(User.id),
                         unique=True)
     teachings = relationship('Teaching', backref='class', lazy=True)
     students = relationship("Students_Classes", backref="class", lazy=True)
@@ -118,6 +115,8 @@ class Class(BaseModel):
 
     def __str__(self):
        return self.name
+
+
 
 class Student(BaseModel):
 
@@ -153,6 +152,15 @@ class Teaching(db.Model):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
+    # Thêm __str__ method để hiển thị thông tin
+    def __str__(self):
+        class_obj = Class.query.get(self.class_id)
+        semester_obj = Semester.query.get(self.semester_id)
+        teacher_obj = User.query.get(self.teacher_id)
+        return f"Lớp: {class_obj.name}, {semester_obj.semester_name}, Giáo viên: {teacher_obj.profile.name}"
+
+
+
 # Chi tiết điểm
 class Exam(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -172,8 +180,8 @@ class Score(db.Model):
     Exam_id = Column(Integer, ForeignKey(Exam.id), nullable=False)
 
     __table_args__ = (
-        CheckConstraint('score >= 0', name='check_age_min'),
-        CheckConstraint('score <= 10', name='check_age_max'),
+        CheckConstraint('score.js >= 0', name='check_age_min'),
+        CheckConstraint('score.js <= 10', name='check_age_max'),
     )
 
 
@@ -187,13 +195,15 @@ class Regulation(BaseModel):
     __table_args__ = (
         CheckConstraint("min_value <= max_value", name="check_min_less_equal_max"),
     )
+    def __str__(self):
+        return self.name
 
 #Mở rộng
 class Notification(BaseModel):
     subject = Column(String(200),nullable=False)
     content = Column(Text,nullable=False)
     created_at = Column(DateTime, default=datetime.now())
-    admin_id = Column(Integer, ForeignKey(Admin.id))
+    admin_id = Column(Integer, ForeignKey(User.id))
 
 if __name__ == "__main__":
     with app.app_context():
@@ -303,21 +313,15 @@ if __name__ == "__main__":
             db.session.commit()
 
 
-        tc1 = Teacher(user_id=3)
-        tc2 = Teacher(user_id=4)
-        tc3 = Teacher(user_id=5)
-        tc4 = Teacher(user_id=6)
-        tc5 = Teacher(user_id=7)
-        tc6 = Teacher(user_id=8)
-        # db.session.add_all([tc1,tc2,tc3,tc4,tc5,tc6])
+
         db.session.commit()
 
-        cl101 = Class(grade=GRADE.KHOI10, name='10A1', amount=10, teacher_id=1, regulation_id=2)
-        cl102 = Class(grade=GRADE.KHOI10, name='10A2', amount=11, teacher_id=2, regulation_id=2)
-        cl111 = Class(grade=GRADE.KHOI11, name='11A1', amount=7, teacher_id=3,regulation_id=2)
-        cl112 = Class(grade=GRADE.KHOI11, name='11A2', amount=8, teacher_id=4,regulation_id=2)
-        cl121 = Class(grade=GRADE.KHOI12, name='12A1', amount=5, teacher_id=5,regulation_id=2)
-        cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=2, teacher_id=6,regulation_id=2)
+        cl101 = Class(grade=GRADE.KHOI10, name='10A1', amount=0, teacher_id=3, regulation_id=2)
+        cl102 = Class(grade=GRADE.KHOI10, name='10A2', amount=0, teacher_id=4, regulation_id=2)
+        cl111 = Class(grade=GRADE.KHOI11, name='11A1', amount=0, teacher_id=5,regulation_id=2)
+        cl112 = Class(grade=GRADE.KHOI11, name='11A2', amount=0, teacher_id=6,regulation_id=2)
+        cl121 = Class(grade=GRADE.KHOI12, name='12A1', amount=0, teacher_id=7,regulation_id=2)
+        cl122 = Class(grade=GRADE.KHOI12, name='12A2', amount=0, teacher_id=8,regulation_id=2)
         #
         # db.session.add_all([cl101, cl102, cl111, cl112, cl121, cl122,])
         db.session.commit()
