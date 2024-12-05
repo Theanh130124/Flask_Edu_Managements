@@ -1,9 +1,10 @@
 from datetime import datetime
-from app import app
+from app import app , db
 import cloudinary.uploader
 from flask import flash
-from app.models import  Semester
+from app.models import  Semester , User , Teacher , UserRole,Admin ,Staff
 from datetime import date
+
 
 
 # Nếu tháng 1-5: Học kỳ vẫn thuộc năm học trước (ví dụ: 2023-2024, thì đây vẫn là năm 2023).
@@ -23,23 +24,27 @@ def get_current_semester():
         year = now.year
     return semester_name, year
 
-
-
-
-
-
-#Upload ảnh
 def upload_to_cloudinary(file):
     try:
         upload_result = cloudinary.uploader.upload(file, folder="user_avatars/")
-        return upload_result.get('secure_url')  # Trả về URL ảnh
+        return upload_result.get('secure_url')
     except Exception as e:
         flash(f"Lỗi tải lên Cloudinary: {e}")
         return None
-#Hiển thị chi tiết lỗi
-
 def display_form_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
             flash(f"Lỗi ở trường {field}: {error}", 'danger')  # Hiển thị lỗi lên giao diện
 
+def on_model_change_user(model, form, is_created):
+    if isinstance(model, User):
+        if model.user_role == UserRole.TEACHER:
+            teacher = Teacher(user_id=model.id)
+            db.session.add(teacher)
+        elif model.user_role == UserRole.ADMIN:
+            admin = Admin(user_id=model.id)
+            db.session.add(admin)
+        elif model.user_role == UserRole.STAFF:
+            staff = Staff(user_id=model.id)
+            db.session.add(staff)
+        db.session.commit()

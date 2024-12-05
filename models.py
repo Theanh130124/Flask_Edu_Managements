@@ -101,15 +101,6 @@ class Subject(BaseModel):
         CheckConstraint("number_of_45p >= 0 AND number_of_45p <=3 ", name="check_number_of_45p"),
     )
 
-
-
-# class Teacher(db.Model):
-#     id = Column(Integer, ForeignKey(User.id), primary_key=True, nullable=False)
-#
-#     teachings = relationship('Teaching', backref='teacher', lazy=True)
-#     user = relationship("User", backref="teacher", lazy=True,  uselist=False)
-
-#
 class Class(BaseModel):
     grade = Column(Enum(GRADE))
     name = Column(String(10), nullable=False)
@@ -148,7 +139,6 @@ class Semester(BaseModel):
     semester_name = Column(String(50), nullable=False)
     year = Column(Integer, default=datetime.now().year)
     teachings = relationship('Teaching', backref='semester', lazy=True)
-#1 năm không thể 2 học kì trùng name
     __table_args__ = (
         db.UniqueConstraint('semester_name', 'year', name='unique_semester_year'),
     )
@@ -173,7 +163,7 @@ class Exam(db.Model):
     student = relationship("Student", backref="exam", lazy=True)
     teach_plan = relationship("Teaching", backref="exam", lazy=True)
 
-# Score_final
+
 class Score(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     score = Column(Float)
@@ -186,11 +176,6 @@ class Score(db.Model):
         CheckConstraint('score <= 10', name='check_age_max'),
     )
 
-# #Quy định với Notification
-# class Notification(BaseModel):
-#     subject = Column(String(200) ,nullable=False)
-#     content = Column(Text, nullable=False)
-#     created_at = Column(DateTime, default=datetime.now())
 
 class Regulation(BaseModel):
     type = Column(Enum(TYPE_REGULATION), default=TYPE_REGULATION.RE_AGE)

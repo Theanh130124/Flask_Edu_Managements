@@ -1,12 +1,27 @@
 from app.models import Class ,Teacher ,Students_Classes
-from app import db , utils
+from app import db , utils , app
 from app.dao import  dao_student
 
 
-def get_class():
-    return db.session.query(Class).join(Teacher).filter(Class.year.__eq__(utils.get_current_year())).all()
-def count_class(grade):
-    return Class.query.filter(Class.year.__eq__(utils.get_current_year())).filter(Class.grade.__eq__(grade)).count
+def get_class(page =1):
+    classes = db.session.query(Class).join(Teacher).filter(Class.year.__eq__(utils.get_current_year()))
+    page_size = app.config['PAGE_SIZE_DETAIL_CLASS']
+    start = (page -1) * page_size
+    classes = classes.slice(start , start + page_size)
+    return classes.all()
+# Kiểm tra xem có viết trùng tên cái dưới đc không
+def count_class_not_grade(grade=None):
+    query = db.session.query(Class).join(Teacher).filter(Class.year == utils.get_current_year())
+    if grade is not None:
+        query = query.filter(Class.grade != grade)
+    return query.count()
+
+
+def count_class(grade=None):
+    query = Class.query.filter(Class.year == utils.get_current_year())
+    if grade is not None:
+        query = query.filter(Class.grade == grade)
+    return query.count()
 def create_class(form):
     new_class = Class(grade=form.grade.data,
                       year=utils.get_current_year(),

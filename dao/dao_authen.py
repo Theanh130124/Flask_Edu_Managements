@@ -20,7 +20,7 @@ def auth_user(username, password):
                              User.password.__eq__(password)).first()
 
 
-# Display profile hiện tại -> Enum nhớ lấy thêm name hoặc name
+
 def display_profile_data(profile, form_account):
     form_account.name.data = profile.name
     form_account.email.data = profile.email
@@ -33,19 +33,17 @@ def display_profile_data(profile, form_account):
 def update_acc_info(form_account):
     profile = current_user.profile
 
-    # Cập nhật các trường có thể thay đổi
+
     profile.email = form_account.email.data
     profile.phone = form_account.phone.data
     profile.address = form_account.address.data
 
-    # Xử lý avatar (nếu có tải lên)
+
     if form_account.avatar.data:
         avatar_file = form_account.avatar.data
         uploaded_url = upload_to_cloudinary(avatar_file)
         if uploaded_url:
-            current_user.avatar = uploaded_url  # Cập nhật avatar mới
+            current_user.avatar = uploaded_url
         else:
             raise Exception("Tải ảnh lên Cloudinary thất bại.")
-
-    # Lưu thay đổi vào database
     db.session.commit()

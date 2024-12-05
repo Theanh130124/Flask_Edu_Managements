@@ -18,6 +18,7 @@ app.config['BABEL_SUPPOTED_LOCALES'] = ['en' ,'vi']
 app.config['PAGE_SIZE_NOTIFICATIONS'] = 3
 app.config['PAGE_SIZE_REGULATIONS'] = 5 #1 trang 5 quy định
 app.config['PAGE_SIZE_LIST_CLASS'] = 6
+app.config['PAGE_SIZE_DETAIL_CLASS'] = 5
 
 babel = Babel(app)
 cloudinary.config(

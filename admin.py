@@ -2,7 +2,7 @@ from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
 from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification
-from app import app, db, login
+from app import app, db, login , utils
 from flask import redirect
 from app.controllers import hash_password
 
@@ -95,7 +95,7 @@ class UserView(AuthenticatedView):
     ]
     can_view_details = True
 
-    # Lọc profile không liên quan đến học sinh
+    # Lọc profile là học sinh
     def get_query(self):
         return self.session.query(self.model).filter(self.model.profile_id.notin_(
             self.session.query(Student.profile_id).distinct()
@@ -107,8 +107,8 @@ class UserView(AuthenticatedView):
             model.password = hash_password(form.password.data)
         elif form.password.data:
             model.password = hash_password(form.password.data)
+        utils.on_model_change_user(model , form , is_created)
         return super().on_model_change(form, model, is_created)
-
 
 class ProfileView(AuthenticatedView):
     column_list = ['name', 'email', 'birthday', 'gender', 'address', 'phone']

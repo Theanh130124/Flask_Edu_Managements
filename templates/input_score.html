@@ -1,0 +1,55 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}
+Quản lý học sinh
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Danh sách lớp giáo viên dạy</h1>
+    <div class="form-group">
+        <label class="mb-2">Chọn lớp</label>
+        <select class="form-control" id="classSelector">
+            <option value="" disabled selected>Chọn một lớp...</option>
+            {% for tp in teaching %}
+                <option value="{{ tp.id }}">
+                    Lớp: {{ tp.class.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}
+                </option>
+            {% else %}
+                <option disabled>Không có lớp nào</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="list-group mt-3" id="classList">
+        {% for tp in teaching %}
+        <div class="list-group-item list-group-item-action d-none" data-class-id="{{ tp.id }}">
+            <div class="d-flex align-items-center justify-content-between">
+                <p class="mb-1">Lớp: {{ tp.class.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}</p>
+                <a href="/grade/input/{{ tp.id }}/score" class="btn btn-info" style="text-decoration:none;color:white">Nhập điểm</a>
+            </div>
+        </div>
+        {% else %}
+            <div class="alert alert-warning">Không có lớp để hiển thị.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('classSelector').addEventListener('change', function() {
+        var selectedClassId = this.value;
+        var classList = document.getElementById('classList').getElementsByClassName('list-group-item');
+
+        // Ẩn tất cả các lớp trước
+        for (var i = 0; i < classList.length; i++) {
+            classList[i].classList.add('d-none');
+        }
+
+        // Hiển thị lớp được chọn
+        var selectedClass = document.querySelector('[data-class-id="' + selectedClassId + '"]');
+        if (selectedClass) {
+            selectedClass.classList.remove('d-none');
+        }
+    });
+</script>
+{% endblock %}
