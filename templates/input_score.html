@@ -13,7 +13,7 @@ Quản lý học sinh
             <option value="" disabled selected>Chọn một lớp...</option>
             {% for tp in teaching %}
                 <option value="{{ tp.id }}">
-                    Lớp: {{ tp.class.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}
+                    Lớp: {{ tp.classes.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}
                 </option>
             {% else %}
                 <option disabled>Không có lớp nào</option>
@@ -25,7 +25,7 @@ Quản lý học sinh
         {% for tp in teaching %}
         <div class="list-group-item list-group-item-action d-none" data-class-id="{{ tp.id }}">
             <div class="d-flex align-items-center justify-content-between">
-                <p class="mb-1">Lớp: {{ tp.class.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}</p>
+                <p class="mb-1">Lớp: {{ tp.classes.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}</p>
                 <a href="/grade/input/{{ tp.id }}/score" class="btn btn-info" style="text-decoration:none;color:white">Nhập điểm</a>
             </div>
         </div>

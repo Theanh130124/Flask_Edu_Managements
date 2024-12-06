@@ -6,7 +6,7 @@ from sqlalchemy.dialects.mssql.information_schema import views
 
 from app import db, app
 from sqlalchemy import Column, Integer, String, Text, Float, Boolean, ForeignKey, Enum, DateTime, CheckConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 import enum
 import hashlib
 
@@ -89,7 +89,7 @@ class Subject(BaseModel):
     grade = Column(Enum(GRADE), default=GRADE.KHOI10)
     number_of_15p = Column(Integer, nullable=False)
     number_of_45p = Column(Integer, nullable=False)
-    teachings = relationship('Teaching', backref='subject', lazy=True)
+    # teachings = relationship('Teaching', backref='subject', lazy=True)
 
     __table_args__ = (
         CheckConstraint("number_of_15p >= 0 AND number_of_15p <=5", name="check_number_of_15p"),
@@ -106,7 +106,7 @@ class Class(BaseModel):
     # 1 lớp chỉ có 1 Giáo viên chủ nhiệm
     teacher_id = Column(Integer, ForeignKey(User.id),
                         unique=True)
-    teachings = relationship('Teaching', backref='class', lazy=True)
+    # teachings = relationship('Teaching', backref='class', lazy=True)
     students = relationship("Students_Classes", backref="class", lazy=True)
     regulation_id = Column(Integer, ForeignKey('regulation.id'), nullable=False)
     __table_args__ = (
@@ -137,7 +137,7 @@ class Students_Classes(BaseModel):
 class Semester(BaseModel):
     semester_name = Column(String(50), nullable=False)
     year = Column(Integer, default=datetime.now().year)
-    teachings = relationship('Teaching', backref='semester', lazy=True)
+    # teachings = relationship('Teaching', backref='semester', lazy=True)
     __table_args__ = (
         db.UniqueConstraint('semester_name', 'year', name='unique_semester_year'),
     )
@@ -152,12 +152,15 @@ class Teaching(db.Model):
     subject_id = Column(Integer, ForeignKey(Subject.id), nullable=False)
     teacher_id = Column(Integer, ForeignKey(User.id), nullable=False)
 
+
+
+    classes = relationship('Class', backref='teachings', lazy=True)
+    semester = relationship('Semester',backref='teachings',lazy=True)
+    subject = relationship('Subject', backref='teachings', lazy=True)
+    teacher = relationship('User',backref='teachings',lazy=True)
     # Thêm __str__ method để hiển thị thông tin
     def __str__(self):
-        class_obj = Class.query.get(self.class_id)
-        semester_obj = Semester.query.get(self.semester_id)
-        teacher_obj = User.query.get(self.teacher_id)
-        return f"Lớp: {class_obj.name}, {semester_obj.semester_name}, Giáo viên: {teacher_obj.profile.name}"
+        return f"Lớp: {self.classes.name}, {self.semester.semester_name}, Giáo viên: {self.teacher.profile.name}"
 
 
 

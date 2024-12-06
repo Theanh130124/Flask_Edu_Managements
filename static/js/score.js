@@ -1,4 +1,3 @@
-
 function createExcel(data, columns, fileName) {
     const ws = XLSX.utils.aoa_to_sheet([columns, ...data]);
     const wb = XLSX.utils.book_new();
@@ -15,7 +14,6 @@ function createExcel(data, columns, fileName) {
 
     XLSX.writeFile(wb, fileName);
 }
-
 function getDataFromInputs() {
     const data = [];
     const rows = document.querySelectorAll('table tbody tr');

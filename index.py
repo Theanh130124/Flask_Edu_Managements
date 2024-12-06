@@ -200,8 +200,8 @@ def info_class(name, grade):
 @role_only([UserRole.TEACHER])
 def input_grade():
 
-    # Fix lại chổ id vào
-    return render_template("input_score.html", teaching =dao_teacher.get_teaching_of_teacher(current_user.id) )
+    teaching = dao_teacher.get_teaching_of_teacher(current_user.id)
+    return render_template("input_score.html", teaching = teaching )
 
 
 

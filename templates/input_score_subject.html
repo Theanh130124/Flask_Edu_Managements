@@ -14,10 +14,12 @@
         <p>Nhập điểm từ hệ thống</p>
         <div class="ms-auto d-flex justify-content-between" style="gap: 10px;">
             <div class="d-flex align-items-center" style="gap:20px;color:#333;">
+
                 <p class="name_class">
-                    Lớp: </p>
-                <p>Môn học: </p>
-                <p>Kì học: </p>
+
+                    Lớp: {{teach_plan.classes.name}} </p>
+                <p>Môn học: {{teach_plan.subject.name}} </p>
+                <p>{{teach_plan.semester.semester_name}} </p>
             </div>
             <div class="action">
                 <button onclick="save()" class="btn btn-success" id="updateButton">Lưu điểm
@@ -39,9 +41,61 @@
         </tr>
         </thead>
         <tbody>
+                {% for s in teach_plan.classes.students %}
+            <tr id="student_{{ s.student.id }}">
+                <td>{{ loop.index }}</td>
+                <td>{{ s.student.profile.name }}</td>
+                <td>
+                    {% for i in range(teach_plan.subject.number_of_15p) %}
+                        <input id="{{s.student.id}}" type="number" class="EXAM_15P_{{ loop.index }}"
+                               name="score_15p_student"
+                               data-column="score_15p"
+                               value="{{ get_score(teach_plan.id,s.student.id,'EXAM_15P',loop.index).score}}"
+                               required min="0" max="10"
+                               style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;"/>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for i in range(teach_plan.subject.number_of_45p) %}
+                        <input id="{{s.student.id }}" type="number" class="EXAM_45P_{{ loop.index }}"
+                               name="score_45p_student"
+                               required data-column="score_45p"
+                               value="{{ get_score(teach_plan.id,s.student.id,'EXAM_45P',loop.index).score }}"
+                               min="0" max="10"
+                               style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;"/>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    <input id="{{ s.student.id }}" type="text" class="EXAM_final_1"
+                           name="score_thi_student"
+                           data-column="score_final"
+                           value="{{ get_score(teach_plan.id,s.student.id,'EXAM_final',1).score }}"
+                           style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;"/>
+                </td>
+                <td class="col-md-2">
+                    {% if can_edit(s.student.id,teach_plan.id) %}
+
+                        <button class="btn btn-info" id="btn-save-{{ s.student.id }}" onclick="save_edit(this)"
+                                hidden="hidden">Xác nhận
+                        </button>
+                        <button class="btn btn-danger" id="btn-edit-{{s.student.id }}" onclick="edit(this)">Sửa
+                        </button>
+                    {% else %}
+
+                        <button class="btn btn-danger" id="btn-edit-{{ s.student.id }}" disabled>Sửa</button>
+
+                    {% endif %}
+                </td>
+
+
+            </tr>
+        {% endfor %}
+        </tbody>
 
     </table>
-    <script src="{{ url_for('static', filename='js/score.js') }}"></script>
+   
+     <script src="{{ url_for('static', filename='js/score.js') }}"></script>
     <script>
         input = document.getElementsByTagName("input")
         for (const i of input) {
@@ -64,7 +118,7 @@
                 }
             }
             fetch("/api/{{ teach_plan.id }}/score", {
-                method: "post",
+                method: "POST",
                 body: JSON.stringify({
                     "list_score": score
                 }),
@@ -160,7 +214,7 @@
         document.getElementById("exportAvgScore").addEventListener("click", function () {
             const semesterId = "{{ teach_plan.semester_id }}";
             const classId = "{{ teach_plan.class_id }}";
-            const subjectId = "{{ teach_plan.teacher_subject_id }}";
+            const subjectId = "{{ teach_plan.id }}";
 
             fetch(`/api/${semesterId}/${classId}/${subjectId}/avg_score`)
                 .then(response => response.json())

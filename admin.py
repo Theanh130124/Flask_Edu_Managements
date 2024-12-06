@@ -52,14 +52,17 @@ class SubjectAdminView(AuthenticatedView):
         if model.teachings:
             result = []
             for teaching in model.teachings:
-                class_obj = Class.query.get(teaching.class_id)
-                semester_obj = Semester.query.get(teaching.semester_id)
-                teacher_obj = User.query.get(teaching.teacher_id)
-                result.append(
-                    f'Lớp: {class_obj.name}, {semester_obj.semester_name}, Giáo viên: {teacher_obj.profile.name}')
-            return ', '.join(result)
+                # Lấy thông tin từ các quan hệ liên kết
+                class_name = teaching.classes.name if teaching.classes else 'Không rõ lớp'
+                semester_name = teaching.semester.semester_name if teaching.semester else 'Không rõ học kỳ'
+                teacher_name = teaching.teacher.profile.name if teaching.teacher and teaching.teacher.profile else 'Không rõ giáo viên'
+
+                # Thêm thông tin vào danh sách
+                result.append(f'Lớp: {class_name}, {semester_name}, Giáo viên: {teacher_name}')
+            return ', '.join(result)  # Kết hợp danh sách thành chuỗi
         return 'Chưa áp dụng'
 
+    # Sử dụng trong Flask-Admin
     column_formatters = {
         'teachings': format_teachings
     }
