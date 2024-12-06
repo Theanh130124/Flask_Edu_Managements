@@ -29,7 +29,7 @@ class GRADE(enum.Enum):
     KHOI10 = 10
     KHOI11 = 11
     KHOI12 = 12
-    # Fix lại qui dịnh tuoi
+
 
 
 class TYPE_REGULATION(enum.Enum):

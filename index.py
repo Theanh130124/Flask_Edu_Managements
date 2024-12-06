@@ -4,7 +4,7 @@ from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
 from flask_login import current_user, login_required, logout_user, login_user
-from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification , dao_semester , dao_teacher
+from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification , dao_semester , dao_teacher ,dao_assignment
 from app.dao.dao_authen import display_profile_data, update_acc_info, auth_user
 from app.dao.dao_regulation import get_regulation_by_type
 from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
@@ -13,6 +13,8 @@ from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
 from decorators import role_only
 from datetime import datetime
 import cloudinary.uploader
+#Đưa api vào
+from app.api.student_class import *
 
 
 # Index là home
@@ -186,16 +188,19 @@ def class_edit():
 @login_required
 @role_only([UserRole.STAFF])
 def info_class(name, grade):
-    class_info = dao_class.get_info_class_by_name(name)
+    page =request.args.get('page',1,type=int)
+    class_info = dao_class.get_info_class_by_name(name )
     student_no_classes = dao_student.student_no_class("KHOI" + str(grade))
     return render_template("class_info.html", class_info=class_info, student_no_class=student_no_classes)
+
+
 
 #Thêm điểm
 @app.route("/grade")
 @login_required
 @role_only([UserRole.TEACHER])
 def input_grade():
-    profile = dao_authen.get_info_by_id(current_user.id)
+
     # Fix lại chổ id vào
     return render_template("input_score.html", teaching =dao_teacher.get_teaching_of_teacher(current_user.id) )
 

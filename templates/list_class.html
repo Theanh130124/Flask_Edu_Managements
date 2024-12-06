@@ -38,12 +38,12 @@
         {% if current_page > 1 %}
             <li class="page-item">
                 <a class="page-link" href="{{ url_for('class_edit', page=current_page - 1) }}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo; Trang trước</span>
+                    <span aria-hidden="true">&laquo; </span>
                 </a>
             </li>
         {% else %}
             <li class="page-item disabled">
-                <span class="page-link">&laquo; Trang trước</span>
+                <span class="page-link">&laquo; </span>
             </li>
         {% endif %}
 
@@ -57,12 +57,12 @@
         {% if current_page < total_pages %}
             <li class="page-item">
                 <a class="page-link" href="{{ url_for('class_edit', page=current_page + 1) }}" aria-label="Next">
-                    <span aria-hidden="true">Trang tiếp theo &raquo;</span>
+                    <span aria-hidden="true"> &raquo;</span>
                 </a>
             </li>
         {% else %}
             <li class="page-item disabled">
-                <span class="page-link">Trang tiếp theo &raquo;</span>
+                <span class="page-link"> &raquo;</span>
             </li>
         {% endif %}
     </ul>

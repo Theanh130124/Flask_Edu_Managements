@@ -5,7 +5,8 @@
 {% block content %}
     <div class="container mt-5 card">
     <!--Giao vien nao chu nhiem roi -> thi se khong hien trong combobox nay-->
-   <div class="card-header bf-info layout_title shadow py-3 px-3 bg-white mb-3">  <span  style="font-weight:bold; font-size:20px;" class="text-center mb-1 mt-1 text-white"><i class="fa fa-list-alt"></i> DANH SÁCH LỚP  {{class_info.name}}</span> </div>
+   <div class="card-header bf-info layout_title shadow py-3 px-3 bg-white mb-3">  <span  style="font-weight:bold; font-size:20px;"
+                                                                                         class="text-center mb-1 mt-1 text-white"><i class="fa fa-list-alt"></i> DANH SÁCH LỚP  {{class_info.name}}</span> </div>
         <hr> <span style="color: red; font-weight:bold; font-size:20px;">Năm học : {{year}}-{{year+1}}  ({{semester_name}})</span>
         <div class="bg-4" style="font-size:16px;">
         <span style="font-size:16px;  font-weight:bold; " id="amount" class="badge bg-success ">Sĩ số: {{ class_info.amount }}</span>
@@ -49,71 +50,108 @@
     </table>
     <div class="d-flex justify-content-end">
         <button onclick="save()" id="add-btn" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i> Lưu</button>
+
         <button onclick="goBack()" id="back-btn" class="btn btn-danger " style="margin-left:15px">Quay lại <i class="fa-solid fa-reply"></i></button>
     </div>
+
         </div>
+ <div id="change-alert" class="alert alert-warning mt-3 d-none" role="alert">
+    Bạn đã thay đổi danh sách lớp. Hãy nhấn nút <b>"Lưu"</b> để cập nhật thay đổi.
+</div>
     <script>
         add = []
         del = []
 
-        function deleteRow(button) {
-            var result = confirm("Bạn có muốn xóa học sinh này không?");
-            if (result) {
-                del.push(button.id)
-                var row = button.parentNode.parentNode;
-                row.parentNode.removeChild(row);
-                document.getElementById("amount").innerHTML = "Sĩ số: " + ({{ amount }} + add.length - del.length).toString()
+    function showChangeAlert() {
+    document.getElementById("change-alert").classList.remove("d-none");
+}
+
+    function updateAmount() {
+        let table = document.getElementById("myTable");
+        let rows = table.rows;
+        let count = 0;
+        for (let i = 1; i < rows.length - 1; i++) { // Bỏ qua header và row thêm học sinh
+            if (rows[i].style.display !== "none") { // Kiểm tra nếu dòng không bị ẩn
+            count++;
             }
+     }
+        document.getElementById("amount").innerHTML = "Sĩ số: " + count.toString();
         }
 
-        function addRow() {
-            var selectElement = document.getElementById("student");
-            if (add.indexOf(selectElement.value) != -1) {
-                confirm("Học sinh đã có trong danh sách?");
-                return
-            }
-            var table = document.getElementById("myTable");
-            var lastRow = table.rows[table.rows.length - 1];
-            var newRow = table.insertRow(lastRow.rowIndex)
-            {% for s in student_no_class %}
-                var id = {{ s.id }}
-                if (id == selectElement.value) {
-                    newRow.insertCell(0).innerHTML = selectElement.value;
-                    newRow.insertCell(1).innerHTML = "{{ s.profile.name }}";
-                    newRow.insertCell(2).innerHTML = "{{ s.profile.birthday.strftime("%d/%m/%Y") }}";
-                    newRow.insertCell(3).innerHTML = `<button class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>`;
-                    add.push(selectElement.value)
-                    document.getElementById("amount").innerHTML = "Sĩ số: " + ({{ amount }} + add.length - del.length).toString()
-                }
-            {% endfor %}
-        }
 
-        function save() {
-            fetch("/api/add_student/{{ class_info.id }}", {
-                method: "post",
-                body: JSON.stringify({
-                    "list_student": add
-                }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }).then(res => res.json()).then(data_add => {
-                fetch("/api/delete_student/{{ class_info.id }}", {
-                    method: "delete",
-                    body: JSON.stringify({
-                        "list_student": del
-                    }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(res => res.json()).then(data => {
-                    if (data.status === 404 && data_add.status === 200) {
-                        confirm("Lưu thành công!");
-                        window.location.href = "/home";
-                    }
-                })
-            })
+function deleteRow(button) {
+    var result = confirm("Bạn có muốn xóa học sinh này không?");
+    if (result) {
+        del.push(button.id); // Thêm ID học sinh vào danh sách xóa
+        var row = button.parentNode.parentNode;
+        row.style.display = "none"; // Ẩn dòng thay vì xóa trực tiếp
+        updateAmount(); // Cập nhật sĩ số
+        showChangeAlert();
+    }
+}
+
+       function addRow() {
+    var selectElement = document.getElementById("student");
+    if (add.indexOf(selectElement.value) !== -1) {
+        alert("Học sinh đã có trong danh sách!");
+        return;
+    }
+
+    var table = document.getElementById("myTable");
+    var lastRow = table.rows[table.rows.length - 1];
+    var newRow = table.insertRow(lastRow.rowIndex);
+
+    {% for s in student_no_class %}
+    if ({{ s.id }} == selectElement.value) {
+        newRow.insertCell(0).innerHTML = selectElement.value;
+        newRow.insertCell(1).innerHTML = "{{ s.profile.name }}";
+        newRow.insertCell(2).innerHTML = "{{ s.profile.birthday.strftime('%d/%m/%Y') }}";
+        newRow.insertCell(3).innerHTML = `<button class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>`;
+        add.push(selectElement.value);
+    }
+    {% endfor %}
+
+    updateAmount(); // Cập nhật sĩ số
+    showChangeAlert();
+}
+
+function save() {
+    fetch("/api/add_student_to_class/{{ class_info.id }}", {
+        method: "POST",
+        body: JSON.stringify({
+            "list_student": add
+        }),
+        headers: {
+            "Content-Type": "application/json"
         }
+    }).then(res => res.json()).then(data_add => {
+        fetch("/api/delete_student_from_class/{{ class_info.id }}", {
+            method: "DELETE",
+            body: JSON.stringify({
+                "list_student": del
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(res => res.json()).then(data_del => {
+            if (data_add.status === 200 && data_del.status === 200) {
+                alert("Lưu thành công!");
+
+                // Lấy sĩ số mới từ API và cập nhật giao diện
+                fetch("/api/get_class_amount/{{ class_info.id }}")
+                    .then(res => res.json())
+                    .then(data_amount => {
+                        document.getElementById("amount").innerHTML = "Sĩ số: " + data_amount.amount;
+                        window.location.href = "/class/{{ class_info.name }}/{{class_info.grade.value}}/info";
+                    });
+            } else {
+                alert("Có lỗi xảy ra khi lưu!");
+            }
+        });
+    });
+}
+
+
 
         function goBack() {
             var result = confirm("Bạn có chắc muốn quay lại trang danh sách lớp học?");

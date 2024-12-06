@@ -5,75 +5,81 @@ Tiếp nhận học sinh
 {% endblock %}
 
 {% block content %}
-<form method="post" id="studentForm" class="d-flex flex-column justify-content-center gap-2" action="/student/register">
-    <h4 class="text-center">Tiếp Nhận Học Sinh</h4>
-    {{ form_student.csrf_token }}
+<div class="container">
+    <form method="post" id="studentForm" class="form p-4 border rounded shadow-sm" action="/student/register">
+        <h4 class="text-center mb-4">Tiếp Nhận Học Sinh</h4>
+        {{ form_student.csrf_token }}
 
-    <!-- Hiển thị thông báo flash -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} mt-3">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+        <!-- Hiển thị thông báo flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mt-3">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            {{ form_student.full_name.label(class="form-label") }}
-            {{ form_student.full_name(class="form-control") }}
-            <div class="invalid-feedback">{{ form_student.full_name.errors|join(", ") }}</div>
-        </div>
-        <div class="col-md-6">
-            {{ form_student.gender.label(class="form-label") }}
-            {{ form_student.gender(class="form-select") }}
-            <div class="invalid-feedback">{{ form_student.gender.errors|join(", ") }}</div>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            {{ form_student.birth_date.label(class="form-label") }}
-            {{ form_student.birth_date(class="form-control") }}
-
-        </div>
-        <div class="col-md-6">
-            {{ form_student.address.label(class="form-label") }}
-            {{ form_student.address(class="form-control") }}
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            {{ form_student.phone_number.label(class="form-label") }}
-            {{ form_student.phone_number(class="form-control {% if form_student.phone_number.errors %}is-invalid{% endif
-            %}") }}
-
-            <!-- Hiển thị lỗi cho phone_number -->
-            {% if form_student.phone_number.errors %}
-            <div class="invalid-feedback">
-                {% for error in form_student.phone_number.errors %}
-                <p>{{ error }}</p>
-                {% endfor %}
+        <!-- Thông tin cá nhân -->
+        <fieldset class="border p-3 mb-3">
+            <legend class="w-auto px-2 text-primary  ">Thông tin tiếp nhận</legend>
+            <div class="row g-3 ">
+                <div class="col-md-6 mb-4 mt-2">
+                    {{ form_student.full_name.label(class="form-label") }}
+                    {{ form_student.full_name(class="form-control") }}
+                    <div class="invalid-feedback">{{ form_student.full_name.errors|join(", ") }}</div>
+                </div>
+                <div class="col-md-6 mb-4 mt-2">
+                    {{ form_student.gender.label(class="form-label") }}
+                    {{ form_student.gender(class="form-select") }}
+                    <div class="invalid-feedback">{{ form_student.gender.errors|join(", ") }}</div>
+                </div>
             </div>
-            {% endif %}
-        </div>
-        <div class="col-md-6">
-            {{ form_student.email.label(class="form-label") }}
-            {{ form_student.email(class="form-control") }}
-        </div>
-    </div>
+            <div class="row g-3 mb-4 mt-2">
+                <div class="col-md-6">
+                    {{ form_student.birth_date.label(class="form-label") }}
+                    {{ form_student.birth_date(class="form-control") }}
+                </div>
+                <div class="col-md-6 ">
+                    {{ form_student.grade.label(class="form-label") }}
+                    {{ form_student.grade(class="form-select") }}
+                    <div class="invalid-feedback">{{ form_student.grade.errors|join(", ") }}</div>
+                </div>
+            </div>
 
-    <div class="row mb-3">
 
-        <div class="col-md-12 d-flex align-items-center justify-content-end gap-1">
-                     {{ form_student.submit(class="btn btn-primary me-2")  }}
 
-            <button type="button" class="btn btn-danger" onclick="document.getElementById('studentForm').reset();">Xóa  <i class="fa-solid fa-delete-left"></i>
+            <div class="row g-3 mb-4 mt-2">
+                <div class="col-md-6">
+                    {{ form_student.address.label(class="form-label") }}
+                    {{ form_student.address(class="form-control") }}
+                </div>
+                <div class="col-md-6 ">
+                    {{ form_student.phone_number.label(class="form-label") }}
+                    {{ form_student.phone_number(class="form-control {% if form_student.phone_number.errors %}is-invalid{% endif %}") }}
+                    {% if form_student.phone_number.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form_student.phone_number.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-4 mt-4">
+                    {{ form_student.email.label(class="form-label") }}
+                    {{ form_student.email(class="form-control") }}
+                </div>
+            </div>
+
+     </fieldset>
+
+        <div class="text-end mt-4">
+            {{ form_student.submit(class="btn btn-primary me-2") }}
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('studentForm').reset();">
+                Xóa <i class="fa-solid fa-delete-left"></i>
             </button>
         </div>
-    </div>
-
-</form>
-
+    </form>
+</div>
 {% endblock %}

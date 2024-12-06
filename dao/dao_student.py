@@ -30,7 +30,7 @@ def create_student(form):
                       )
     db.session.add(profile)
     db.session.commit()
-    student = Student( profile_id=profile.id, regulation_id=1)
+    student = Student( profile_id=profile.id, regulation_id=1 , grade=form.grade.data)
     db.session.add(student)
     db.session.commit()
     return student

@@ -3,6 +3,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.fields import StringField, EmailField, SubmitField, PasswordField, SelectField, DateField, IntegerField
 from wtforms.validators import InputRequired, Length, NumberRange, Regexp, DataRequired, ValidationError
 from app.models import Regulation, TYPE_REGULATION
+from app.models import GRADE
 
 
 class LoginForm(FlaskForm):
@@ -20,6 +21,9 @@ class AdmisionStudent(FlaskForm):
                          render_kw={"placeholder": "Chọn giới tính"})
     birth_date = DateField("Ngày sinh", validators=[DataRequired()],
                            render_kw={"placeholder": "Chọn ngày sinh"}, format="%Y-%m-%d")
+    #Khi tiếp nhan có thể tiếp nhận hs từ trường khác khối 11 , 12
+    GRADE_CHOICES = [(grade.name, f"Khối {grade.value}") for grade in GRADE]
+    grade = SelectField("Khối", choices=GRADE_CHOICES, validators=[InputRequired()],render_kw={"placeholder":"Chọn khối"})
     address = StringField("Địa chỉ", validators=[InputRequired(), Length(max=255)],
                           render_kw={"placeholder": "Nhập địa chỉ"})
     phone_number = StringField("Số điện thoại", validators=[
