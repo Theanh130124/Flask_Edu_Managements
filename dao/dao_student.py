@@ -1,6 +1,7 @@
 import json
 import random
-from app.models import  Student , Students_Classes ,Semester , Profile , Class
+from app.models import Student, Students_Classes, Semester, Profile, Class, Exam, Subject, Score, Teaching, \
+    TYPE_REGULATION, TYPEEXAM
 from app import db
 from app.utils import get_current_year
 
@@ -80,3 +81,25 @@ def get_list_student_no_class_by_grade(size,grade):
     student_had_class = db.session.query(Student.id).join(Students_Classes).join(Class).filter(Class.year == get_current_year())
     non_class_students = db.session.query(Student).filter(Student.id.not_in(student_had_class)).filter(Student.grade == grade).all()
     return random.sample(non_class_students,size)
+
+
+def view_score_student(studen_id ,semester_id):
+    return  ((db.session.query(Exam, Subject.name , Score.type , Score.score , Score.count).join(Teaching, Exam.teach_plan_id == Teaching.id)
+             .join(Score,Exam.id==Score.Exam_id))
+             .join(Subject,Teaching.subject_id==Subject.id)
+             .filter(Exam.student_id==studen_id)
+             .filter(Teaching.semester_id==semester_id)
+             .filer(Class.year == get_current_year()).all())
+def preprocess_scores(scores):
+    subject_scores = {}
+    for exam , name , type , score , count , in scores:
+        if name not in subject_scores:
+            subject_scores[name] = {'15_minute': {'scores':[],'count': 0 }, '45_minute':{'scores':[],'count':0},
+                                    'final_points':{'scores':[],'count':0}}
+        if type == TYPEEXAM.EXAM_15P:
+            subject_scores[name]['15_minute']['scores'].append(score)
+        elif type == TYPEEXAM.EXAM_45P:
+            subject_scores[name]['45_minute']['scores'].append(score)
+        elif type == TYPEEXAM.EXAM_final:
+            subject_scores[name]['final_points']['scores'].append(score)
+        return subject_scores

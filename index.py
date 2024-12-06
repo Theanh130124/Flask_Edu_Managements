@@ -1,5 +1,4 @@
 import math
-
 from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
@@ -179,7 +178,7 @@ def class_edit():
     classes = dao_class.get_class(page =page)
     total = dao_class.count_class()
     return render_template("list_class.html", classes=classes, current_page = page ,
-                           total_pages=math.ceil(total / app.config["PAGE_SIZE_DETAIL_CLASS"])
+                           total_pages=math.ceil(total / app.config["PAGE_SIZE_LIST_CLASS"])
                            )
 
 
@@ -188,7 +187,7 @@ def class_edit():
 @login_required
 @role_only([UserRole.STAFF])
 def info_class(name, grade):
-    page =request.args.get('page',1,type=int)
+
     class_info = dao_class.get_info_class_by_name(name )
     student_no_classes = dao_student.student_no_class("KHOI" + str(grade))
     return render_template("class_info.html", class_info=class_info, student_no_class=student_no_classes)
@@ -213,5 +212,10 @@ def input_grade():
 def input_grade_subject(teach_plan_id):
     teach_plan = dao_teacher.get_teaching_by_id(teach_plan_id)
     return render_template("input_score_subject.html", can_edit=dao_teacher.can_edit_exam, get_score=dao_teacher.get_score_by_student_id,teach_plan=teach_plan)
+
+@app.route("/view_score", methods=['GET','POST'])
+def view_score():
+    semester = dao_semester.get_all_semester()
+    return  render_template("view_score.html", semester=semester)
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

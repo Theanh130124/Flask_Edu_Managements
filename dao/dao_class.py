@@ -5,7 +5,7 @@ from app.dao import  dao_student
 
 def get_class(page =1):
     classes = db.session.query(Class).join(User, Class.teacher_id == User.id).filter(Class.year == utils.get_current_year(), User.user_role == UserRole.TEACHER)
-    page_size = app.config['PAGE_SIZE_DETAIL_CLASS']
+    page_size = app.config['PAGE_SIZE_LIST_CLASS']
     start = (page -1) * page_size
     classes = classes.slice(start , start + page_size)
     return classes.all()

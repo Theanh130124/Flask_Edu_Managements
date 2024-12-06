@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Xem Điểm</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+    />
+
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/otp.css') }}"/>
+</head>
+<body>
+
+<header class="bg-dark">
+    <div class="container-fluid pt-2 pb-2">
+        <div class="d-flex justify-content-between">
+            <a class="navbar-brand text-white" href="#"></a>
+            <div class="d-flex" style="margin-right: 30px">
+                <div>
+                    <p class="text-white fs-1" id="name-header"></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container shadow-md mt-2">
+    <div class="d-flex gap-3 ">
+        <div class="p-3 rounded-3 d-flex flex-column " style="width:450px;background-color:#1668b3;">
+            <h4 style="color:white;font-weight: bold;text-align: center">Tra cứu kết quả học tập</h4>
+            <label style="color:white" class="form-label fs-6">Nhập số điện thoại:</label>
+            <div id="formCheckPhone" class="d-flex flex-column align-items-center">
+                <div class="input-group mb-3 ">
+                    <input type="text" class="form-control" name="student_phone_number" id="check-student"
+                           aria-describedby="basic-addon3">
+                </div>
+                <div id="recaptcha-container" class="mt-2"></div>
+                <button class="btn btn-success my-2 w-50" id="btnCheckPhoneNumber" type="submit" style="color:white">Xác
+                    nhận
+                </button>
+
+            </div>
+
+            <div class="digit-group" id="digit-group">
+                <label style="color:white" class="form-label fs-6">Vui Lòng nhập OTP:</label>
+                <div class="mb-2 digit-group d-flex justify-content-center">
+                    <input type="text" id="digit-1" name="digit-1" data-next="digit-2"/>
+                    <input type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1"/>
+                    <input type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2"/>
+                    <input type="text" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3"/>
+                    <input type="text" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4"/>
+                    <input type="text" id="digit-6" name="digit-6" data-previous="digit-5"/>
+                </div>
+                <div class="mb-2 digit-group d-flex justify-content-center">
+                    <button class="btn-success btn w-50" id="checkOtp">Xác nhận OTP</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="p-3 shadow-sm" style="width:800px">
+                <h1 class="text-info" id="text-need-verify">Vui Lòng nhập số điện thoại để xem điểm</h1>
+                <div class="d-lg-none" id="view-score">
+                    <p>Để tra cứu điểm của học sinh <span style="font-weight:bold" id="name-student-view-score"></span>
+                        vui lòng chọn kì học</p>
+                    <p class="text-black-50 fs-5" id="year-student"></p>
+                    <form id="viewScoreFrom"
+                          method="GET">
+                        <label style="color:#1668b3" class="form-label">Chọn kì học:</label>
+                        <select class="form-select" name="semester_id">
+                            {% for s in semester %}
+                                <option value="{{ s.id }}">{{ s.semester_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-info mt-2" id="btnSemester" style="color:white">
+                            Xem điểm
+                        </button>
+                    </form>
+                    <div>
+                        <div class="container mt-3">
+                            <p class="text-center" id="par-view-score">
+                            </p>
+                            <table class="table table-bordered d-lg-none" id="tableScore">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Môn học</th>
+                                    <th scope="col">Điểm 15p</th>
+                                    <th scope="col">Điểm 1 Tiết</th>
+                                    <th scope="col">Điểm Thi</th>
+                                </tr>
+                                </thead>
+                                <tbody id="scoresTable">
+                                </tbody>
+                            </table>
+                            <p class="text-danger text-center fs-2" id="messgae"></p>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"
+></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+<script src="{{ url_for('static', filename='js/otp.js') }}"></script>
+
+<script type="module">
+    var coderesult = ""
+    var dataStudent = null
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0N-lLI2z7-pSChYSNzsm2fqdZEzjtVLc",
+        authDomain: "mobile-auth-9f6c3.firebaseapp.com",
+        projectId: "mobile-auth-9f6c3",
+        storageBucket: "mobile-auth-9f6c3.appspot.com",
+        messagingSenderId: "444414383977",
+        appId: "1:444414383977:web:62a1e777a1ab8a6cc10ff8",
+        measurementId: "G-WMZ0FSBT5Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+    render();
+
+    function render() {
+
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+        recaptchaVerifier.render();
+
+    }
+
+    const year = (new Date().getFullYear() - 1).toString()
+    console.log(year)
+    document.getElementById("year-student").innerHTML = "Năm Học : " + year
+
+    function convertPhoneNumber(phoneNumber) {
+        if (typeof phoneNumber !== 'string' || phoneNumber.length === 0) {
+            throw new Error('Invalid phone number');
+        }
+
+        if (phoneNumber.startsWith('0')) {
+            return '+84' + phoneNumber.slice(1);
+        } else {
+            return phoneNumber;
+        }
+    }
+
+    function getStudentData() {
+        var studentData = localStorage.getItem("studentData");
+        if (studentData) {
+            try {
+                return JSON.parse(studentData);
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                return null;
+            }
+        } else {
+            console.log("No student data found in localStorage.");
+            return null;
+        }
+    }
+
+    document.getElementById("btnCheckPhoneNumber").addEventListener("click", function (e) {
+        e.preventDefault()
+        const phoneNumber = document.getElementById("check-student").value
+        const data = {
+            "phone_number": phoneNumber
+        }
+        fetch('/api/view_score/verify_number', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        })
+            .then(data => {
+                localStorage.setItem("studentData", data)
+                if (data) {
+                    document.getElementById("digit-group").style.display = "block"
+
+                    firebase.auth().signInWithPhoneNumber(convertPhoneNumber(phoneNumber), window.recaptchaVerifier).then(function (confirmationResult) {
+                        window.confirmationResult = confirmationResult;
+                        coderesult = confirmationResult;
+                        console.log('OTP Sent');
+                        document.getElementById("btnCheckPhoneNumber").style.display = "none"
+                        document.getElementById("recaptcha-container").style.display = "none"
+
+                    }).catch(function (error) {
+                        alert(error.message);
+                    });
+                    document.getElementById("checkOtp").addEventListener("click", function () {
+                        const inputs = document.querySelectorAll('.digit-group input')
+                        let opt = ''
+                        inputs.forEach((input) => {
+                            opt += input.value;
+                        });
+                        coderesult.confirm(opt).then(function () {
+                            var studentData = getStudentData()
+
+                            if (studentData) {
+                                var studentNameInfor = studentData.studentName;
+                                document.getElementById("name-header").innerHTML = studentNameInfor
+                                document.getElementById("digit-group").style.display = "none"
+                                document.getElementById("text-need-verify").style.display = "none"
+                                document.getElementById("view-score").classList.remove("d-lg-none")
+                                document.getElementById("btnCheckPhoneNumber").style.display = "block"
+                                document.getElementById("recaptcha-container").style.display = "block"
+                            } else {
+                                console.log("No student data found in localStorage.");
+                            }
+                        }).catch(function () {
+                            alert("Wrong OTP check again")
+                        })
+                    })
+                } else {
+                    console.log("loi")
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+    })
+
+    function displayScores(scores) {
+        var studentData = getStudentData()
+        document.getElementById("tableScore").classList.remove("d-lg-none")
+
+        var selectedSemesterId = document.querySelector('select[name="semester_id"]').value;
+        document.getElementById("par-view-score").innerHTML = "Kết quả học tập của " + studentData.studentName + " học " + selectedSemesterId;
+        var tableBody = document.getElementById('scoresTable');
+        console.log(tableBody)
+        tableBody.innerHTML = '';
+
+        // Loop through scores and create table rows
+        for (var subject in scores) {
+            var row = tableBody.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+
+            cell1.textContent = subject;
+
+            cell2.textContent = scores[subject]['15_minute']['scores'].length > 0 ? scores[subject]['15_minute']['scores'].join(' ') : '-';
+
+            cell3.textContent = scores[subject]['45_minute']['scores'].length > 0 ? scores[subject]['45_minute']['scores'].join(' ') : '-';
+
+            cell4.textContent = scores[subject]['final_points']['scores'].length > 0 ? scores[subject]['final_points']['scores'].join(' ') : '-';
+        }
+    }
+
+    document.getElementById("btnSemester").addEventListener("click", function (e) {
+        e.preventDefault()
+        var studentData = getStudentData()
+        document.getElementById("name-student-view-score").innerHTML = studentData.studentName
+        var selectedSemesterId = document.querySelector('select[name="semester_id"]').value;
+        fetch(`/api/view_score/${studentData.id}?semester_id=${selectedSemesterId}`, {
+            method: "GET"
+        }).then(res => {
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return res.json();
+        }).then(res => {
+            if (Object.keys(res).length !== 0) {
+                displayScores(res)
+                document.getElementById("messgae").style.display = "none"
+            } else {
+                 document.getElementById("tableScore").classList.add("d-lg-none")
+                document.getElementById("par-view-score").style.display = "none"
+                document.getElementById("messgae").style.display = "block"
+                document.getElementById("messgae").innerHTML = "Chưa có danh sách điểm"
+            }
+        }).catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        })
+
+    })
+
+
+</script>
+
+</body>
+</html>
