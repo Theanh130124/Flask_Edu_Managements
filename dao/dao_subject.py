@@ -86,10 +86,10 @@ def avg_score_student(semester_id, class_id, subject_id):
     ).join(Teaching, Exam.teach_plan_id == Teaching.id
     ).join(Students_Classes, Exam.student_id == Students_Classes.student_id
     ).join(Student, Students_Classes.student_id == Student.id
-    ).join(Profile, Student.id == Profile.id
+    ).join(Profile, Student.profile_id == Profile.id
     ).filter(
         Students_Classes.class_id == class_id,
-        Teaching.subject.has(subject_id=subject_id),
+        Teaching.subject_id==subject_id,
         Teaching.semester_id == semester_id,
         Class.year == get_current_year()
     ).group_by(Student.id, Profile.name).all()

@@ -14,6 +14,8 @@ from datetime import datetime
 import cloudinary.uploader
 #Đưa api vào
 from app.api.student_class import *
+from app.api.student_score import *
+from app.api.teach import  *
 
 
 # Index là home
@@ -211,7 +213,8 @@ def input_grade():
 @role_only([UserRole.TEACHER])
 def input_grade_subject(teach_plan_id):
     teach_plan = dao_teacher.get_teaching_by_id(teach_plan_id)
-    return render_template("input_score_subject.html", can_edit=dao_teacher.can_edit_exam, get_score=dao_teacher.get_score_by_student_id,teach_plan=teach_plan)
+    current_year = utils.get_current_year()
+    return render_template("input_score_subject.html", can_edit=dao_teacher.can_edit_exam, get_score=dao_teacher.get_score_by_student_id,teach_plan=teach_plan, current_year=current_year)
 
 @app.route("/view_score", methods=['GET','POST'])
 def view_score():
