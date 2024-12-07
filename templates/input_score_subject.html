@@ -128,7 +128,7 @@
             }).then(res => res.json()).then(data => {
                 if (data.status === 200) {
                     confirm("Lưu thành công!");
-                    window.location.href = "/home";
+                    window.location.href = "/grade/input/{{teach_plan.id}}/score";
                 }
             })
         }
