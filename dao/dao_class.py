@@ -1,4 +1,4 @@
-from app.models import Class, Students_Classes, User, UserRole
+from app.models import Class, Students_Classes, User, UserRole , Student
 from app import db , utils , app
 from app.dao import  dao_student
 
@@ -37,8 +37,24 @@ def create_class(form):
         db.session.add(student_class)
         db.session.commit()
 
-def get_info_class_by_name(name):
-    return db.session.query(Class).filter(Class.name == name, Class.year == utils.get_current_year()).first()
+
+def get_info_class_by_name(name, page=1):
+
+    class_query = db.session.query(Class).filter(Class.name == name, Class.year == utils.get_current_year())
+    class_info = class_query.first()
+    if not class_info:
+        return None
+    students_query = db.session.query(Student).join(Students_Classes).join(Class).filter(
+        Class.id == class_info.id
+    )
+
+    total_students = students_query.count()
+
+    page_size = app.config['PAGE_SIZE_DETAIL_CLASS']
+    start = (page - 1) * page_size
+    students_query = students_query.offset(start).limit(page_size)
+    students = students_query.all()
+    return students, class_info ,total_students
 
 
 def teacher_name(teacher_id):

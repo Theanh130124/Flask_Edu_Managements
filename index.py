@@ -189,11 +189,21 @@ def class_edit():
 @login_required
 @role_only([UserRole.STAFF])
 def info_class(name, grade):
+    page = request.args.get('page', 1, type=int)
+    students, class_info, total_students = dao_class.get_info_class_by_name(name, page=page)
+    # print(total_students)
+    total_pages = math.ceil(total_students / app.config["PAGE_SIZE_DETAIL_CLASS"])
 
-    class_info = dao_class.get_info_class_by_name(name )
     student_no_classes = dao_student.student_no_class("KHOI" + str(grade))
-    return render_template("class_info.html", class_info=class_info, student_no_class=student_no_classes)
 
+    return render_template(
+        "class_info.html",
+        class_info=class_info,
+        student_no_class=student_no_classes,
+        current_page=page,
+        total_pages=total_pages,
+        students=students
+    )
 
 
 #Thêm điểm

@@ -209,8 +209,7 @@
             XLSX.writeFile(wb, fileName);
         }
 
-        const year = "{{current_year}}-{{current_year+1}}"
-        console.log(year)
+
         document.getElementById("exportAvgScore").addEventListener("click", function () {
             const semesterId = "{{ teach_plan.semester_id }}";
             const classId = "{{ teach_plan.class_id }}";

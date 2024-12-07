@@ -19,6 +19,7 @@ app.config['PAGE_SIZE_NOTIFICATIONS'] = 3
 app.config['PAGE_SIZE_REGULATIONS'] = 5 #1 trang 5 quy định
 app.config['PAGE_SIZE_LIST_CLASS'] = 5
 app.config['PAGE_SIZE_DETAIL_CLASS'] = 5
+app.config['PAGE_SIZE_VIEW_SCORE_SUBJECT'] = 8
 
 babel = Babel(app)
 cloudinary.config(

@@ -48,6 +48,36 @@
         </tr>
         </tbody>
     </table>
+  <div class="pagination justify-content-center">
+    <ul class="pagination">
+        {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('info_class', name=class_info.name, grade=class_info.grade.value, page=current_page-1) }}">&laquo;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+        {% endif %}
+
+        {% for page_num in range(1, total_pages + 1) %}
+            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('info_class', name=class_info.name, grade=class_info.grade.value, page=page_num) }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('info_class', name=class_info.name, grade=class_info.grade.value, page=current_page+1) }}">&raquo;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
     <div class="d-flex justify-content-end">
         <button onclick="save()" id="add-btn" class="btn btn-primary"><i class="fa-regular fa-floppy-disk"></i> Lưu</button>
 

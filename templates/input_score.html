@@ -13,7 +13,7 @@ Quản lý học sinh
             <option value="" disabled selected>Chọn một lớp...</option>
             {% for tp in teaching %}
                 <option value="{{ tp.id }}">
-                    Lớp: {{ tp.classes.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm: {{ tp.semester.year }}
+                    Lớp: {{ tp.classes.name }} - Môn: {{ tp.subject.name }} - {{ tp.semester.semester_name }} - Năm học: {{ tp.semester.year }}-{{ tp.semester.year +1 }}
                 </option>
             {% else %}
                 <option disabled>Không có lớp nào</option>

@@ -79,6 +79,8 @@ class User(UserMixin, BaseModel):
     class_teach = relationship("Class", backref="teacher", lazy=True)
     notifications = relationship('Notification', backref="user", lazy=True)
 
+    def __str__(self):
+        return self.username
 
 
 
@@ -208,6 +210,8 @@ class Notification(BaseModel):
     created_at = Column(DateTime, default=datetime.now())
     admin_id = Column(Integer, ForeignKey(User.id))
 
+    def __str__(self):
+        return self.subject
 if __name__ == "__main__":
     with app.app_context():
         # db.session.commit()
