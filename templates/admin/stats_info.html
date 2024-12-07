@@ -1,0 +1,108 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <div class="container mt-5 w-100">
+        <h1 class="mb-4 text-info">Thống kê môn học {{ subject_info.name }} khối {{ subject_info.grade.value }} </h1>
+        <h2 class="mb-4 text-info">Top 5 học sinh điểm cao nhất </h2>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Thứ hạng</th>
+                <th>Tên</th>
+                <th>Điểm trung bình</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in top_5_student %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ s[0] }}</td>
+                <td>{{ s[1] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <h2 class="mb-4 text-info">Theo điểm trung bình môn theo lớp </h2>
+        <div class="w-100" style="display: flex;justify-content: center">
+            <canvas id="myChart"></canvas>
+        </div>
+        <h2 class="mb-4 text-info">Số liệu chi tiết về xếp loại điểm của môn </h2>
+        <div class="w-100" style="display: flex;justify-content: center">
+            <canvas id="myChart1" class="w-50 h-50"></canvas>
+        </div>
+    <h2 class="mb-4 text-info">Báo cáo tổng kết môn học </h2>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Lớp</th>
+                <th>Sĩ số</th>
+                <th>Số lượng đạt</th>
+                <th>Tỉ lệ</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in res_final %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ def_get_class(s[0]).name }}</td>
+                <td>{{ s[1] }}</td>
+                <td>{{ s[2] }}</td>
+                <td>{{ (s[2]/s[1]*100)|round(2) }}%</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        console.log({{ num_of_classification }})
+        list_name_class = []
+        {% for class_id in list_class_id %}
+            list_name_class.push("{{ def_get_class(class_id).name }}")
+        {% endfor %}
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: list_name_class,
+                datasets: [{
+                    label: 'điểm trung bình theo lớp',
+                    data: {{ list_dtb }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        const ctx1 = document.getElementById('myChart1');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'Giỏi',
+                    'Khá',
+                    'Trung bình',
+                    'Yếu',
+                ],
+                datasets: [{
+                    label: "Thống kê xếp loại",
+                    data: {{ num_of_classification }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

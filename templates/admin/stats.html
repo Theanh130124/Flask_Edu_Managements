@@ -1,0 +1,42 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Thống kê môn học</h1>
+        <div class="d-flex align-items-center" style="gap:10px">
+            <p style="margin-top: 16px"> Học kì: </p>
+            <select class="form-select ms-3 rounded-pill" style="width:120px;text-align: center; height: 40px"
+                    id="semester"
+                    name="semester">
+                {% for k in list_semester %}
+                    <option value="{{ k.id }}">{{ k.semester_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="mb-2">Tìm kiếm môn học</label>
+            <input type="text" class="form-control" id="search_class"
+                   placeholder="Tìm kiếm lớp...">
+            <div class="invalid-feedback">Không tìm thấy môn</div>
+        </div>
+        <div class="list-group mt-3" id="classList">
+            {% for s in list_subject %}
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="mb-1">Môn: {{ s.name }} - Khối: {{ s.grade.value }}</p>
+                        <button onclick="stats(this)" id="{{ s.id }}" class="btn btn-info"
+                                style="text-decoration:none;color:white">Thống kê
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function stats(button) {
+            window.location.href = `/admin/statinfoview/?subject=${button.id}&semester=${document.getElementById("semester").value}`
+        }
+    </script>
+
+{% endblock %}

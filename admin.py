@@ -1,10 +1,13 @@
+
+
 from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
 from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification , Semester
 from app import app, db, login , utils
-from flask import redirect
+from flask import redirect, request
 from app.controllers import hash_password
+from app.dao import  dao_subject ,dao_semester , dao_class
 
 
 # De authen
@@ -162,6 +165,35 @@ class NotificationView(AuthenticatedView):
         'created_at':'Thời gian tạo'
     }
     can_view_details = True
+
+class StatView(BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/stats.html',list_subject= dao_subject.get_all_subject(),
+                            list_semester = dao_semester.get_all_semester())
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
+class StatInfoView(BaseView):
+    @expose('/')
+    def index(self):
+        res = dao_subject.get_avg_score_by_class(request.args.get("semester"), request.args.get("subject"))
+        classification = [int(item) if item is not None else 0 for item in dao_subject.num_of_classification(request.args.get("semester"), request.args.get("subject"))[0]]
+        list_class_id = [t[0] for t in res]
+        list_dtb = [t[1] for t in res]
+        return self.render('admin/stats_info.html', subject_info=dao_subject.get_subject_by_id(request.args.get("subject")),
+                           list_class_id=list_class_id,
+                           list_dtb=list_dtb,
+                           def_get_class=dao_class.get_class_by_id,
+                           num_of_classification=classification,
+                           top_5_student=dao_subject.top_5_highest_score_by_subject(request.args.get("semester"), request.args.get("subject")),
+                           res_final=dao_subject.get_result_by_class(request.args.get("semester"), request.args.get("subject")))
+
+    def is_visible(self):
+        return False
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
+
 admin = Admin(app, name='Quản lý học sinh ', template_mode='bootstrap4')
 
 admin.add_view(RegulationsAdminView(Regulation, db.session, name="Chỉnh sửa quy định"))
@@ -170,6 +202,8 @@ admin.add_view(SubjectAdminView(Subject, db.session, name="Quản lý môn học
 admin.add_view(UserView(User, db.session, name='Người dùng'))
 admin.add_view(ProfileView(Profile, db.session, name="Hồ sơ"))
 admin.add_view(NotificationView(Notification , db.session,name="Quản lý thông báo"))
+admin.add_view(StatView(name='Thống kê'))
+admin.add_view(StatInfoView(name="Thống kê chi tiết"))
 admin.add_view(LogoutView(name='Đăng xuất'))
 admin.add_view(LoginUserView(name='Về trang đăng nhập người dùng'))
 

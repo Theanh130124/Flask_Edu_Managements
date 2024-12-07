@@ -214,7 +214,7 @@
             const semesterId = "{{ teach_plan.semester_id }}";
             const classId = "{{ teach_plan.class_id }}";
             const subjectId = "{{ teach_plan.id }}";
-
+            year = "{{current_year}} - {{current_year+1}}"
             fetch(`/api/${semesterId}/${classId}/${subjectId}/avg_score`)
                 .then(response => response.json())
                 .then(data => {

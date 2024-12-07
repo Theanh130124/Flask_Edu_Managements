@@ -7,6 +7,8 @@ from sqlalchemy.sql import text
 def get_subject_by_id(subject_id):
     return Subject.query.get(subject_id)
 
+def get_all_subject():
+    return Subject.query.all()
 
 def get_avg_score_by_class(semester_id,s_id):
     student_dtb = db.session.query(Student.id.label("id"), (func.sum(case((Score.type == "EXAM_15P", Score.score * 1),(Score.type == "EXAM_45P", Score.score * 2),(Score.type == "EXAM_final", Score.score * 3))) /

@@ -47,7 +47,6 @@ class TYPEEXAM(enum.Enum):
     EXAM_final = 3
 
 class Profile(BaseModel):
-
     name = Column(String(50), nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     birthday = Column(db.Date ,nullable=False)
