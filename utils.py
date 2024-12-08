@@ -2,7 +2,7 @@ from datetime import datetime
 from app import app , db
 import cloudinary.uploader
 from flask import flash
-from app.models import  Semester , User , UserRole
+
 from datetime import date
 
 

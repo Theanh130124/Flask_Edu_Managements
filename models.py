@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship, backref
 import enum
 import hashlib
 
+from app.utils import get_current_year
 
 
 class BaseModel(db.Model):
@@ -347,3 +348,6 @@ if __name__ == "__main__":
         # st1 = Student(profile_id =10 , regulation_id = 1   )
         # db.session.add(st1)
         db.session.commit()
+        sme1 = Semester(semester_name='Học kỳ 1', year=get_current_year, id=1)
+        sme2 = Semester(semester_name='Học kỳ 2' , year=get_current_year , id=2)
+        # db.session.add_all([sme1,sme2])

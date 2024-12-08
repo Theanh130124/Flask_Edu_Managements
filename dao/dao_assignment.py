@@ -1,4 +1,4 @@
-from app.models import Class ,Subject, Semester , Teaching
+from app.models import Class, Subject, Semester, Teaching, User, UserRole
 from app import db
 from datetime import date , datetime
 
@@ -12,8 +12,8 @@ def load_subject_of_class(grade):
     return Subject.query.filter_by(grade=grade)
 
 
-# def load_all_teacher_subject(subject_id):
-#     return Teacher.query.join(Teachers_Subject).filter(Teachers_Subject.subject_id == subject_id).all()
+def load_all_teacher_subject(subject_id):
+    return User.query.join(Teaching).filter(Teaching.subject_id == subject_id , User.user_role ==UserRole.TEACHER).all()
 
 
 def get_semester(semester_id):
@@ -22,8 +22,8 @@ def get_semester(semester_id):
 def load_assignments_of_class(class_id):
     return Teaching.query.filter_by(class_id=class_id)
 
-# def get_id_teacher_subject(teacher_id, subject_id):
-#     return Teachers_Subject.query.filter_by(teacher_id=teacher_id, subject_id=subject_id).first()
+def get_id_teacher_subject(teacher_id, subject_id):
+    return Teaching.query.filter_by(teacher_id=teacher_id, subject_id=subject_id).first()
 
 def save_subject_assignment(class_id, semester_id, teacher_subject_id):
     if isinstance(semester_id, int):

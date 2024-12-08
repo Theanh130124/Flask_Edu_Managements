@@ -20,16 +20,27 @@
             </tr>
             </thead>
             <tbody>
-            {% for s in classes %}
-                <tr>
-                    <th scope="row">{{ s.id }}</th>
-                    <td>{{ s.name }}</td>
-                    <td>{{ s.grade.value }}</td>
-                    <td>{{ s.teacher.profile.name }}</td>
-                    <td>{{ s.amount}}</td>
-                    <td><a class="btn btn-success" href="/class/{{ s.name }}/{{ s.grade.value }}/info">Sửa <i class="fa-solid fa-pen-to-square"></i></a></td>
-                </tr>
-            {% endfor %}
+{% for s in classes %}
+    <tr>
+        <th scope="row">{{ s.id }}</th>
+        <td>{{ s.name }}</td>
+        <td>{{ s.grade.value }}</td>
+        <td>
+            {% if s.teacher %}
+                {{ s.teacher.profile.name }}
+            {% else %}
+                Chưa phân công
+            {% endif %}
+        </td>
+        <td>{{ s.amount }}</td>
+        <td>
+            <a class="btn btn-success" href="/class/{{ s.name }}/{{ s.grade.value }}/info">
+                Sửa <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+        </td>
+    </tr>
+{% endfor %}
+
             </tbody>
 
         </table>

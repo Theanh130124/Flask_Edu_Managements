@@ -1,4 +1,4 @@
-from app.models import Teaching , Class , User , Exam , Score
+from app.models import Teaching, Class, User, Exam, Score, UserRole
 from app.utils import get_current_year
 from app import db
 from app.dao import dao_class , dao_semester
@@ -17,6 +17,7 @@ def can_edit_exam(student_id, teach_plan_id):
     if e:
         return True
     return False
+
 
 def get_score_by_student_id(teach_plan_id,student_id, type,count):
     return db.session.query(Score).join(Exam).filter(Exam.teach_plan_id == teach_plan_id)\

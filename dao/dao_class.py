@@ -2,10 +2,10 @@ from app.models import Class, Students_Classes, User, UserRole , Student
 from app import db , utils , app
 from app.dao import  dao_student
 
-
+# outerjoin để hiện đc lớp chưa có gvcn
 def get_class(page =1):
-    classes = (db.session.query(Class).join(User, Class.teacher_id == User.id)
-               .filter(Class.year == utils.get_current_year(), User.user_role == UserRole.TEACHER))
+    classes = (db.session.query(Class).outerjoin(User, Class.teacher_id == User.id)
+               .filter(Class.year == utils.get_current_year()))
     page_size = app.config['PAGE_SIZE_LIST_CLASS']
     start = (page -1) * page_size
     classes = classes.slice(start , start + page_size)
@@ -58,6 +58,8 @@ def get_info_class_by_name(name, page=1):
     students = students_query.all()
     return students, class_info ,total_students
 
+def get_class_by_name(name):
+    return db.session.query(Class).filter_by(name=name).first()
 
 def teacher_name(teacher_id):
         teacher = User.query.get(teacher_id)

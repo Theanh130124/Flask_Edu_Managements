@@ -19,7 +19,7 @@ from app.api.teach import  *
 
 
 # Index là home
-# Hàm này luôn truyền vào
+# Hàm này luôn truyền các info vào
 @app.context_processor
 def common_attr():
     if current_user.is_authenticated:
@@ -27,10 +27,12 @@ def common_attr():
         user = dao_authen.load_user(current_user.id)
         semester_name, year = get_current_semester()
         semester = dao_semester.get_or_create_semester(semester_name, year)
+        current_year = utils.get_current_year()
         return {'profile': profile,
                 'user': user,
                 'semester_name':semester.semester_name,
-                'year':semester.year,}
+                'year':semester.year,
+                'current_year':current_year}
     return {}
 
 
@@ -141,25 +143,6 @@ def info_acc():
     return render_template('acc_info.html', form_account=form_account)
 
 
-#
-# @app.route('/class/change', methods=['GET','POST'])
-# @login_required
-# @role_only([UserRole.STAFF])
-# def change_class():
-#     form_create_class = ChangeClass()
-#     form_create_class.teacher.choices = [(temp_teacher.id, temp_teacher.user.profile.name) for temp_teacher in
-#                                          teacher.get_teacher_not_presidential()]
-#     if request.method == "POST" and form_create_class.validate_on_submit():
-#         try:
-#             # if form_create_class.class_size.data > regulation.get_regulation_by_name("Sĩ số tối đa").max:
-#             #     return render_template("create_class.html", form_create_class=form_create_class, list_class=group_class.get_class(),
-#             #                student_no_class=student.student_no_class(),mse="Sĩ số lớp không phù hợp")
-#             temp_class = group_class.create_class(form_create_class)
-#         except Exception as e:
-#             redirect("/home")
-#         redirect(url_for("index"))
-#     return render_template("create_class.html", form_create_class=form_create_class, list_class=group_class.get_class(),
-#                            student_no_class=student.student_no_class())
 
 
 @app.route("/regulations")
@@ -171,7 +154,7 @@ def view_regulations():
     return render_template('regulations.html', regulations=regulations , current_page = page ,
                            total_pages=math.ceil(total / app.config["PAGE_SIZE_REGULATIONS"]))
 
-
+#List-class
 @app.route('/class/edit')
 @login_required
 @role_only([UserRole.STAFF])
@@ -230,5 +213,76 @@ def input_grade_subject(teach_plan_id):
 def view_score():
     semester = dao_semester.get_all_semester()
     return  render_template("view_score.html", semester=semester)
+
+#Phan cong Teaching
+@app.route('/teacher/assignment', methods=['GET','POST'])
+@login_required
+@role_only([UserRole.STAFF])
+def teacher_assignment():
+    classname = ''
+    if request.method.__eq__("POST"):
+        classname = request.form.get("class-list")
+        grade_value = request.form.get("grade-list")
+        return redirect('/teacher/assignment/'+grade_value +'/'+classname)
+    return render_template("teacher_assignment.html",classname=classname )
+
+@app.route('/api/class/', methods=['GET'])
+@role_only([UserRole.STAFF])
+def get_class():
+    q = request.args.get('q')
+    res = {}
+    if q:
+        class_list = dao_assignment.load_class_by_grade(q)
+        json_class_list = [
+            {
+                "grade": c.grade.value,
+                "name": c.name,
+            }
+            for c in class_list
+        ]
+        return jsonify({"class_list": json_class_list})
+    return jsonify({})
+
+
+@app.route('/teacher/assignment/<grade>/<string:classname>' , methods=['GET','POST','DELETE'])
+@login_required
+@role_only([UserRole.STAFF])
+def teacher_assignment_class(grade, classname):
+    subject_list = dao_assignment.load_subject_of_class(grade='KHOI' + grade)
+    class_id = dao_class.get_class_by_name(name=classname).id
+    teachers = User.query.filter(User.user_role == UserRole.TEACHER).all()
+
+
+    if request.method.__eq__("GET"):
+        plan = dao_assignment.load_assignments_of_class(class_id=class_id)
+        return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
+                               get_teachers=teachers, plan=plan)
+    elif request.method.__eq__("POST") and request.form.get("type").__eq__("save"):
+        for s in subject_list:
+            teacher_id = request.form.get("teacher-assigned-{id}".format(id=s.id))
+            teacher_subject_id = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id).id
+            total_seme = request.form.get("total-seme-{id}".format(id=s.id))
+            seme1 = request.form.get("seme1-{id}".format(id=s.id))
+            seme2 = request.form.get("seme2-{id}".format(id=s.id))
+            semester_id = None
+            if total_seme:
+                semester_id = [1, 2]
+            elif seme1:
+                semester_id = 1
+            elif seme2:
+                semester_id = 2
+            dao_assignment.save_subject_assignment(
+                class_id=class_id,
+                semester_id=semester_id,
+                teacher_subject_id=teacher_subject_id
+            )
+        return redirect("/teacher/assignment/{grade}/{classname}".format(grade=str(grade), classname=classname ))
+    elif request.method.__eq__("POST") and request.form.get("type").__eq__("delete"):
+        dao_assignment.delete_assignments(class_id)
+        return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
+                               get_teachers=dao_assignment.load_all_teacher_subject )
+    return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
+                           get_teachers=dao_assignment.load_all_teacher_subject )
+
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse
