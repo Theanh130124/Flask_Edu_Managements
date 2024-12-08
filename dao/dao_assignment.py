@@ -13,7 +13,7 @@ def load_subject_of_class(grade):
 
 
 def load_all_teacher_subject(subject_id):
-    return User.query.join(Teaching).filter(Teaching.subject_id == subject_id , User.user_role ==UserRole.TEACHER).all()
+    return User.query.join(Teaching).filter(Teaching.subject_id == subject_id).all()
 
 
 def get_semester(semester_id):
@@ -24,6 +24,7 @@ def load_assignments_of_class(class_id):
 
 def get_id_teacher_subject(teacher_id, subject_id):
     return Teaching.query.filter_by(teacher_id=teacher_id, subject_id=subject_id).first()
+
 
 def save_subject_assignment(class_id, semester_id, teacher_subject_id):
     if isinstance(semester_id, int):

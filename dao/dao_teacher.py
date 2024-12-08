@@ -17,7 +17,8 @@ def can_edit_exam(student_id, teach_plan_id):
     if e:
         return True
     return False
-
+def get_all_teacher():
+    return User.query.filter(User.user_role == UserRole.TEACHER).all()
 
 def get_score_by_student_id(teach_plan_id,student_id, type,count):
     return db.session.query(Score).join(Exam).filter(Exam.teach_plan_id == teach_plan_id)\

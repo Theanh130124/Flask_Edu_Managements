@@ -244,45 +244,78 @@ def get_class():
     return jsonify({})
 
 
-@app.route('/teacher/assignment/<grade>/<string:classname>' , methods=['GET','POST','DELETE'])
+@app.route('/teacher/assignment/<grade>/<string:classname>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 @role_only([UserRole.STAFF])
 def teacher_assignment_class(grade, classname):
     subject_list = dao_assignment.load_subject_of_class(grade='KHOI' + grade)
     class_id = dao_class.get_class_by_name(name=classname).id
-    teachers = User.query.filter(User.user_role == UserRole.TEACHER).all()
+    teachers = dao_teacher.get_all_teacher()
 
-
-    if request.method.__eq__("GET"):
+    if request.method == "GET":
         plan = dao_assignment.load_assignments_of_class(class_id=class_id)
         return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
                                get_teachers=teachers, plan=plan)
-    elif request.method.__eq__("POST") and request.form.get("type").__eq__("save"):
+
+    elif request.method == "POST" and request.form.get("type") == "save":
         for s in subject_list:
             teacher_id = request.form.get("teacher-assigned-{id}".format(id=s.id))
-            teacher_subject_id = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id).id
-            total_seme = request.form.get("total-seme-{id}".format(id=s.id))
-            seme1 = request.form.get("seme1-{id}".format(id=s.id))
-            seme2 = request.form.get("seme2-{id}".format(id=s.id))
-            semester_id = None
-            if total_seme:
-                semester_id = [1, 2]
-            elif seme1:
-                semester_id = 1
-            elif seme2:
-                semester_id = 2
-            dao_assignment.save_subject_assignment(
-                class_id=class_id,
-                semester_id=semester_id,
-                teacher_subject_id=teacher_subject_id
-            )
-        return redirect("/teacher/assignment/{grade}/{classname}".format(grade=str(grade), classname=classname ))
-    elif request.method.__eq__("POST") and request.form.get("type").__eq__("delete"):
+
+            # Kiểm tra nếu giáo viên đã được phân công cho môn học này
+            teacher_subject = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id)
+
+            if teacher_subject is None:
+                # Nếu không có bản ghi nào, ta sẽ tạo mới bản ghi trong bảng Teaching
+                total_seme = request.form.get("total-seme-{id}".format(id=s.id))
+                seme1 = request.form.get("seme1-{id}".format(id=s.id))
+                seme2 = request.form.get("seme2-{id}".format(id=s.id))
+                semester_id = None
+                if total_seme:
+                    semester_id = [1, 2]  # Cả 2 kỳ
+                elif seme1:
+                    semester_id = 1  # Kỳ 1
+                elif seme2:
+                    semester_id = 2  # Kỳ 2
+
+                # Lưu phân công vào bảng Teaching
+                new_teacher_subject = Teaching(
+                    teacher_id=teacher_id,
+                    subject_id=s.id,
+                    semester_id=semester_id,
+                    class_id=class_id
+                )
+
+                # Thêm bản ghi mới vào cơ sở dữ liệu và commit
+                db.session.add(new_teacher_subject)
+                db.session.commit()
+
+            else:
+                # Nếu đã có bản ghi, cập nhật lại thông tin (nếu cần)
+                total_seme = request.form.get("total-seme-{id}".format(id=s.id))
+                seme1 = request.form.get("seme1-{id}".format(id=s.id))
+                seme2 = request.form.get("seme2-{id}".format(id=s.id))
+                semester_id = None
+                if total_seme:
+                    semester_id = [1, 2]  # Cả 2 kỳ
+                elif seme1:
+                    semester_id = 1  # Kỳ 1
+                elif seme2:
+                    semester_id = 2  # Kỳ 2
+
+                # Cập nhật phân công trong bảng Teaching
+                teacher_subject.semester_id = semester_id
+                db.session.commit()
+
+        return redirect(f"/teacher/assignment/{grade}/{classname}")
+
+    elif request.method == "POST" and request.form.get("type") == "delete":
         dao_assignment.delete_assignments(class_id)
         return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
-                               get_teachers=dao_assignment.load_all_teacher_subject )
+                               get_teachers=dao_assignment.load_all_teacher_subject)
+
     return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
-                           get_teachers=dao_assignment.load_all_teacher_subject )
+                           get_teachers=dao_assignment.load_all_teacher_subject)
+
 
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

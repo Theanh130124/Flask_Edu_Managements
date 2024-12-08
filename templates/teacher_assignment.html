@@ -84,15 +84,16 @@
                             <div class="col col-sm-1 border py-2">{{ subject.id }}</div>
                             <div class="col col-md-2 border py-2">{{ subject.name }}</div>
                             <div class="col col-md-5 border py-2 text-center">
-                                <select class="form-select p-1 rounded-3 fs-6 w-100 h-auto " id="teacher"
-                                        name="teacher-assigned-{{ subject.id }}">
-                                    <option selected disabled hidden="true">Chọn giáo viên</option>
-                                    {% for teacher in teachers %}
-                                        <option id="teacher-{{ teacher.id }}"
-                                                value="{{ teacher.id }}">ID: {{ teacher.id }} | {{ teacher.profile.name }}</option>
+                            <select class="form-select p-1 rounded-3 fs-6 w-100 h-auto " id="teacher"
+                                    name="teacher-assigned-{{ subject.id }}">
+                                <option selected disabled hidden="true">Chọn giáo viên</option>
+                                {% for teacher in get_teachers %}
+                                    <option id="teacher-{{ teacher.id }}" value="{{ teacher.id }}">
+                                        ID: {{ teacher.id }} | {{ teacher.profile.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
 
-                                    {% endfor %}
-                                </select>
                             </div>
                             <div class="col col-sm-2 border d-flex py-2 justify-content-center align-items-center">
                                 <input class="form-check-input" type="checkbox" name="total-seme-{{ subject.id }}"

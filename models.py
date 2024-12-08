@@ -185,8 +185,8 @@ class Score(db.Model):
     Exam_id = Column(Integer, ForeignKey(Exam.id), nullable=False)
 
     __table_args__ = (
-        CheckConstraint('score.js >= 0', name='check_age_min'),
-        CheckConstraint('score.js <= 10', name='check_age_max'),
+        CheckConstraint('score >= 0', name='check_age_min'),
+        CheckConstraint('score <= 10', name='check_age_max'),
     )
 
 
