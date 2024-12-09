@@ -215,16 +215,25 @@ def view_score():
     return  render_template("view_score.html", semester=semester)
 
 #Phan cong Teaching
-@app.route('/teacher/assignment', methods=['GET','POST'])
+@app.route('/teacher/assignment', methods=['GET', 'POST'])
 @login_required
 @role_only([UserRole.STAFF])
 def teacher_assignment():
     classname = ''
-    if request.method.__eq__("POST"):
+    if request.method == "POST":
         classname = request.form.get("class-list")
         grade_value = request.form.get("grade-list")
-        return redirect('/teacher/assignment/'+grade_value +'/'+classname)
-    return render_template("teacher_assignment.html",classname=classname )
+
+        # Kiểm tra nếu thiếu giá trị
+        if not classname or not grade_value:
+            flash("Bạn phải chọn cả khối và lớp trước khi tìm kiếm.", "error")
+            return redirect(request.referrer or '/teacher/assignment')  # Quay lại trang hiện tại hoặc trang assignment
+
+        # Chuyển hướng nếu có đủ dữ liệu
+        return redirect(f'/teacher/assignment/{grade_value}/{classname}')
+
+    return render_template("teacher_assignment.html", classname=classname)
+
 
 @app.route('/api/class/', methods=['GET'])
 @role_only([UserRole.STAFF])
@@ -242,80 +251,79 @@ def get_class():
         ]
         return jsonify({"class_list": json_class_list})
     return jsonify({})
-
-
 @app.route('/teacher/assignment/<grade>/<string:classname>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 @role_only([UserRole.STAFF])
 def teacher_assignment_class(grade, classname):
     subject_list = dao_assignment.load_subject_of_class(grade='KHOI' + grade)
-    class_id = dao_class.get_class_by_name(name=classname).id
+    if not subject_list:
+        flash("Không tìm thấy danh sách môn học cho khối này!", "error")
+        return redirect("/teacher/assignment")  # Điều hướng về trang chính nếu lỗi
+
+    class_info = dao_class.get_class_by_name(name=classname)
+    if not class_info:
+        flash("Không tìm thấy lớp học này!", "error")
+        return redirect("/teacher/assignment")
+
+    class_id = class_info.id
     teachers = dao_teacher.get_all_teacher()
+    if not teachers:
+        flash("Không tìm thấy danh sách giáo viên!", "error")
+        return redirect("/teacher/assignment")
 
     if request.method == "GET":
         plan = dao_assignment.load_assignments_of_class(class_id=class_id)
+        if plan is None:
+            flash("Không có kế hoạch phân công cho lớp này!", "info")
         return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
                                get_teachers=teachers, plan=plan)
 
     elif request.method == "POST" and request.form.get("type") == "save":
-        for s in subject_list:
-            teacher_id = request.form.get("teacher-assigned-{id}".format(id=s.id))
+        try:
+            for s in subject_list:
+                teacher_id = request.form.get(f"teacher-assigned-{s.id}")
+                if not teacher_id:
+                    continue  # Bỏ qua nếu không chọn giáo viên cho môn học
 
-            # Kiểm tra nếu giáo viên đã được phân công cho môn học này
-            teacher_subject = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id)
-
-            if teacher_subject is None:
-                # Nếu không có bản ghi nào, ta sẽ tạo mới bản ghi trong bảng Teaching
-                total_seme = request.form.get("total-seme-{id}".format(id=s.id))
-                seme1 = request.form.get("seme1-{id}".format(id=s.id))
-                seme2 = request.form.get("seme2-{id}".format(id=s.id))
+                teacher_subject = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id)
                 semester_id = None
-                if total_seme:
-                    semester_id = [1, 2]  # Cả 2 kỳ
-                elif seme1:
-                    semester_id = 1  # Kỳ 1
-                elif seme2:
-                    semester_id = 2  # Kỳ 2
+                if request.form.get(f"total-seme-{s.id}"):
+                    semester_id = "1,2"  # Cả 2 kỳ
+                elif request.form.get(f"seme1-{s.id}"):
+                    semester_id = "1"  # Kỳ 1
+                elif request.form.get(f"seme2-{s.id}"):
+                    semester_id = "2"  # Kỳ 2
 
-                # Lưu phân công vào bảng Teaching
-                new_teacher_subject = Teaching(
-                    teacher_id=teacher_id,
-                    subject_id=s.id,
-                    semester_id=semester_id,
-                    class_id=class_id
-                )
+                if teacher_subject is None:
+                    # Tạo mới nếu chưa có bản ghi
+                    new_teacher_subject = Teaching(
+                        teacher_id=teacher_id,
+                        subject_id=s.id,
+                        semester_id=semester_id,
+                        class_id=class_id
+                    )
+                    db.session.add(new_teacher_subject)
+                else:
+                    # Cập nhật nếu đã có bản ghi
+                    teacher_subject.semester_id = semester_id
 
-                # Thêm bản ghi mới vào cơ sở dữ liệu và commit
-                db.session.add(new_teacher_subject)
-                db.session.commit()
-
-            else:
-                # Nếu đã có bản ghi, cập nhật lại thông tin (nếu cần)
-                total_seme = request.form.get("total-seme-{id}".format(id=s.id))
-                seme1 = request.form.get("seme1-{id}".format(id=s.id))
-                seme2 = request.form.get("seme2-{id}".format(id=s.id))
-                semester_id = None
-                if total_seme:
-                    semester_id = [1, 2]  # Cả 2 kỳ
-                elif seme1:
-                    semester_id = 1  # Kỳ 1
-                elif seme2:
-                    semester_id = 2  # Kỳ 2
-
-                # Cập nhật phân công trong bảng Teaching
-                teacher_subject.semester_id = semester_id
-                db.session.commit()
-
+            db.session.commit()
+            flash("Phân công giảng dạy thành công!", "success")
+        except Exception as e:
+            flash(f"Lỗi khi lưu phân công: ", "error")
         return redirect(f"/teacher/assignment/{grade}/{classname}")
 
     elif request.method == "POST" and request.form.get("type") == "delete":
-        dao_assignment.delete_assignments(class_id)
-        return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
-                               get_teachers=dao_assignment.load_all_teacher_subject)
+        try:
+            dao_assignment.delete_assignments(class_id)
+            flash("Đã xóa phân công giảng dạy thành công!", "success")
+        except Exception as e:
+            flash(f"Lỗi khi xóa phân công:", "error")
+        return redirect(f"/teacher/assignment/{grade}/{classname}")
 
+    flash("Có lỗi xảy ra, vui lòng thử lại!", "error")
     return render_template("teacher_assignment.html", grade=grade, classname=classname, subjects=subject_list,
-                           get_teachers=dao_assignment.load_all_teacher_subject)
-
+                           get_teachers=teachers)
 
 if __name__ == '__main__':
     app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse

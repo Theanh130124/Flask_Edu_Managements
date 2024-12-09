@@ -3,7 +3,22 @@
     Phân Công Công Việc
 {% endblock %}
 {% block content %}
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-danger ">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
     <div>
+
         <div class="d-flex justify-content-between">
             <h3>Phân công giảng dạy</h3>
             <div class="d-flex">
