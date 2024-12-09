@@ -73,11 +73,15 @@ def login():
     if request.method == "POST" and form.SubmitFieldLogin():
         username = form.username.data
         password = form.password.data
-        user = dao_authen.auth_user(username=username, password=password)
-        if user:
-            login_user(user)
-            return redirect(url_for('index'))
-        mse = "Tài khoản hoặc mật khẩu không đúng"
+        user = dao_authen.get_user_by_username(username=username)
+        if not user :
+            mse = "Tài khoản không tồn tại trong hệ thống"
+        else:
+            if dao_authen.check_password_md5(user, password):
+                login_user(user)
+                return redirect(url_for('index'))
+            else:
+                mse = "Mật khẩu không đúng"
     return render_template('login.html', form=form, mse=mse)
 
 

@@ -1,4 +1,7 @@
 import hashlib
+
+
+
 from app.models import Profile, User
 from app import db, app
 from app.utils import upload_to_cloudinary
@@ -47,3 +50,13 @@ def update_acc_info(form_account):
         else:
             raise Exception("Tải ảnh lên Cloudinary thất bại.")
     db.session.commit()
+def get_user_by_username(username):
+    return User.query.filter_by(username=username).first()
+
+
+def check_password_md5(user, password):
+    if user and user.password:  # Đảm bảo user tồn tại và có trường password
+        hashed_password = hashlib.md5(password.encode('utf-8')).hexdigest()
+        return hashed_password == user.password
+    return False
+
