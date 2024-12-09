@@ -1,4 +1,7 @@
 import math
+
+from wtforms.validators import email
+
 from app.admin import *
 from app import dao, login, app ,utils
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
@@ -28,11 +31,14 @@ def common_attr():
         semester_name, year = get_current_semester()
         semester = dao_semester.get_or_create_semester(semester_name, year)
         current_year = utils.get_current_year()
+        list_semester = dao_semester.get_all_semester()
         return {'profile': profile,
                 'user': user,
                 'semester_name':semester.semester_name,
                 'year':semester.year,
-                'current_year':current_year}
+                'current_year':current_year,
+                'list_semester':list_semester}
+
     return {}
 
 
@@ -102,27 +108,43 @@ def register():
     regulation_age = get_regulation_by_type(TYPE_REGULATION.RE_AGE)
     min_age = regulation_age.min_value  # độ tuổi tối thiểu
     max_age = regulation_age.max_value  # độ tuổi tối đa
+
     if request.method == "POST":
         if form_student.validate_on_submit():
             try:
                 birth_date = form_student.birth_date.data
                 current_year = datetime.now().year
                 age = current_year - birth_date.year
+                email = form_student.email.data
+                phone = form_student.phone_number.data
+
+                # Kiểm tra độ tuổi
                 if age < min_age or age > max_age:
                     flash(f"Độ tuổi phải từ {min_age} đến {max_age}!", "danger")
                     return redirect(url_for("register"))
+
+
+                if dao_authen.check_email_exists(email):
+                    flash("Email đã tồn tại trong hệ thống!", "danger")
+                    return redirect(url_for("register"))
+
+                if dao_authen.check_phone_exists(phone):
+                    flash("Số điện thoại đã tồn tại trong hệ thống!", "danger")
+                    return redirect(url_for("register"))
+
+
                 dao_student.create_student(form_student)
                 flash("Tạo học sinh thành công!", "success")
                 return redirect(url_for("register"))
+
             except Exception as e:
                 flash(f"Đã xảy ra lỗi khi tạo học sinh: {e}", "danger")
                 return render_template("register_student.html", form_student=form_student)
+
         else:
             utils.display_form_errors(form_student)
-            return render_template("register_student.html", form_student=form_student)
 
     return render_template("register_student.html", form_student=form_student)
-
 
 # import pdb
 # pdb.set_trace()
@@ -230,7 +252,7 @@ def teacher_assignment():
 
         # Kiểm tra nếu thiếu giá trị
         if not classname or not grade_value:
-            flash("Bạn phải chọn cả khối và lớp trước khi tìm kiếm.", "error")
+            flash("Vui lòng chọn cả khối và lớp trước khi tìm kiếm.", "error")
             return redirect(request.referrer or '/teacher/assignment')  # Quay lại trang hiện tại hoặc trang assignment
 
         # Chuyển hướng nếu có đủ dữ liệu

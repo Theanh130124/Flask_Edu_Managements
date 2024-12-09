@@ -170,7 +170,7 @@ class StatView(BaseView):
     @expose('/')
     def index(self):
         return self.render('admin/stats.html',list_subject= dao_subject.get_all_subject(),
-                            list_semester = dao_semester.get_all_semester())
+                           )
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
 class StatInfoView(BaseView):
@@ -180,7 +180,11 @@ class StatInfoView(BaseView):
         classification = [int(item) if item is not None else 0 for item in dao_subject.num_of_classification(request.args.get("semester"), request.args.get("subject"))[0]]
         list_class_id = [t[0] for t in res]
         list_dtb = [t[1] for t in res]
+        semester_id = request.args.get('semester')
+        semester = dao_semester.get_semester_by_id(semester_id)
+
         return self.render('admin/stats_info.html', subject_info=dao_subject.get_subject_by_id(request.args.get("subject")),
+                           semester =semester,
                            list_class_id=list_class_id,
                            list_dtb=list_dtb,
                            def_get_class=dao_class.get_class_by_id,

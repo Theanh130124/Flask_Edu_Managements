@@ -60,3 +60,8 @@ def check_password_md5(user, password):
         return hashed_password == user.password
     return False
 
+def check_email_exists(email):
+    return Profile.query.filter_by(email=email).first() is not None
+
+def check_phone_exists(phone):
+    return Profile.query.filter_by(phone=phone).first() is not None

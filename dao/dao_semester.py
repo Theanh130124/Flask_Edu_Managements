@@ -12,4 +12,5 @@ def get_or_create_semester(semester_name, year):
         db.session.add(semester)
         db.session.commit()
     return semester
-
+def get_semester_by_id(semester_id):
+    return Semester.query.get(semester_id)
