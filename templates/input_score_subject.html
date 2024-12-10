@@ -8,27 +8,32 @@
         <div id="message-error" style="margin-left: 10px;">
         </div>
     </div>
-    <div class="px-2"
-         style="font-size: 20px; gap: 10px; background-color: #cdd9e7; color: #2c5789; font-weight: bold;">
-
-        <p>Nhập điểm từ hệ thống</p>
-        <div class="ms-auto d-flex justify-content-between" style="gap: 10px;">
-            <div class="d-flex align-items-center" style="gap:20px;color:#333;">
-
-                <p class="name_class">
-
-                    Lớp: {{teach_plan.classes.name}} </p>
-                <p>Môn học: {{teach_plan.subject.name}} </p>
-                <p>{{teach_plan.semester.semester_name}} </p>
-            </div>
-            <div class="action">
-                <button onclick="save()" class="btn btn-success" id="updateButton">Lưu điểm
-                </button>
-                <button class="btn btn-primary" id="exportButton" >Xuất file excel</button>
-                <button class="btn btn-primary" id="exportAvgScore">Xuất điểm trung bình</button>
-            </div>
+<div class="px-2 py-3"
+     style="font-size: 18px; background-color: #f4f7fb; color: #3a4750; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <p style="font-size: 22px; margin-bottom: 20px; color: #2c5789;">Nhập điểm từ hệ thống</p>
+    <div class="d-flex justify-content-between align-items-center" style="gap: 15px;">
+        <div class="d-flex align-items-center" style="gap: 30px; color: #333;">
+            <p class="name_class" style="font-size: 16px; margin: 0;">
+                Lớp: <span style="font-weight: normal;">{{teach_plan.classes.name}}</span>
+            </p>
+            <p style="font-size: 16px; margin: 0;">Môn học: <span style="font-weight: normal;">{{teach_plan.subject.name}}</span></p>
+            <p style="font-size: 16px; margin: 0;">{{teach_plan.semester.semester_name}}</p>
+        </div>
+        <div class="action" style="display: flex; gap: 10px;">
+            <button onclick="save()" class="btn btn-success" id="updateButton" style="border-radius: 5px; padding: 8px 16px; font-size: 14px; box-shadow: 0 4px 8px rgba(0, 128, 0, 0.2); transition: background-color 0.3s ease;">
+                Lưu điểm
+            </button>
+            <button class="btn btn-primary" id="exportButton" style="border-radius: 5px; padding: 8px 16px; font-size: 14px; box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2); transition: background-color 0.3s ease;">
+                Xuất file excel
+            </button>
+            <button class="btn btn-primary" id="exportAvgScore" style="border-radius: 5px; padding: 8px 16px; font-size: 14px; box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2); transition: background-color 0.3s ease;">
+                Xuất điểm trung bình
+            </button>
         </div>
     </div>
+</div>
+
+
     <table class="table">
         <thead>
         <tr>

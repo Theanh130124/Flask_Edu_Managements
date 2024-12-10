@@ -3,7 +3,7 @@ import math
 from wtforms.validators import email
 
 from app.admin import *
-from app import dao, login, app ,utils
+from app import dao, login, app ,utils , mail
 from flask import render_template, redirect, request, flash, url_for, jsonify ,  session
 from flask_login import current_user, login_required, logout_user, login_user
 from app.dao import dao_authen, dao_student, dao_regulation, dao_class , dao_notification , dao_semester , dao_teacher ,dao_assignment
@@ -19,6 +19,7 @@ import cloudinary.uploader
 from app.api.student_class import *
 from app.api.student_score import *
 from app.api.teach import  *
+from flask_mail import Message
 
 
 # Index là home
@@ -112,6 +113,7 @@ def register():
     if request.method == "POST":
         if form_student.validate_on_submit():
             try:
+
                 birth_date = form_student.birth_date.data
                 current_year = datetime.now().year
                 age = current_year - birth_date.year
@@ -133,7 +135,8 @@ def register():
                     return redirect(url_for("register"))
 
 
-                dao_student.create_student(form_student)
+                s = dao_student.create_student(form_student)
+                send_mail(subject="Thông báo nhập học ", student_name=s.profile.name, recipients=[s.profile.email])
                 flash("Tạo học sinh thành công!", "success")
                 return redirect(url_for("register"))
 
@@ -277,6 +280,14 @@ def get_class():
         ]
         return jsonify({"class_list": json_class_list})
     return jsonify({})
+def send_mail(subject, recipients, student_name):
+    msg = Message(subject=subject, sender=app.config['MAIL_USERNAME'],
+                  recipients=recipients)
+    msg.html = render_template("/email/email.html", student_name=student_name)
+    mail.send(msg)
+    return "Message sent!"
+
+
 @app.route('/teacher/assignment/<grade>/<string:classname>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 @role_only([UserRole.STAFF])

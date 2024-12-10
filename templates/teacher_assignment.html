@@ -20,10 +20,10 @@
     <div>
 
         <div class="d-flex justify-content-between">
-            <h3>Phân công giảng dạy</h3>
+            <h3 >PHÂN CÔNG GIẢNG DẠY</h3>
             <div class="d-flex">
                 <div class="d-flex align-items-center">
-                    <p style="margin-top: 16px">Năm học: </p>
+                    <p class="text-danger" style="margin-top: 16px ;font-weight:bold; font-size:20px">Năm học: </p>
                     <select class="form-select ms-3 p-2 rounded-pill" style="width:130px; height: auto" id="sel1"
                             name="sellist">
                         <option>{{current_year}}-{{current_year+1}}</option>
@@ -31,14 +31,14 @@
                 </div>
             </div>
         </div>
-        <div style="background-color: #F8F8FF">
-            <div class="bg-info p-1 h-auto">
-                <h4>Thông tin tìm kiếm</h4>
+        <div style="background-color: #f8f9fa">
+            <div class="layout_title p-1 h-auto">
+                <h4 class="text-white">Thông tin tìm kiếm</h4>
             </div>
             <form id="form-search" method="post" action="/teacher/assignment">
                 <div class="d-flex justify-content-around p-2">
                     <div class="d-flex align-items-center">
-                        <label for="grade" class="form-label my-auto fs-6 me-3">Khối lớp: </label>
+                        <label for="grade" class="form-label my-auto fs-6 me-3 text-success " style="font-weight:bold;">Khối lớp: </label>
                         <select class="form-select p-1 rounded-3 fs-6" style="width:200px; height: auto"
                                 id="grade"
                                 name="grade-list"
@@ -50,7 +50,7 @@
                         </select>
                     </div>
                     <div class="d-flex align-items-center">
-                        <label for="class-list" class="form-label my-auto fs-6 me-3">Lớp:</label>
+                        <label for="class-list" class="form-label my-auto fs-6 me-3 text-success" style="font-weight:bold;">Lớp:</label>
                         <select class="form-select p-1 rounded-3 fs-6" style="width:200px; height: auto" id="class-list"
                                 name="class-list">
                             <option selected disabled hidden="true">Chọn lớp</option>
@@ -87,12 +87,12 @@
                 </div>
                 <div class="text-center">
                     <div class="row">
-                        <div class="col col-sm-1 p-2 bg-info border "><strong>STT</strong></div>
-                        <div class="col col-md-2 p-2 bg-info border "><strong>Môn học</strong></div>
-                        <div class="col col-md-5 p-2 bg-info border "><strong>Giáo viên</strong></div>
-                        <div class="col col-sm-2 p-2 bg-info border "><strong>Áp dụng cả 2 học kỳ</strong></div>
-                        <div class="col col-sm-1 p-2 bg-info border "><strong>Học kỳ 1</strong></div>
-                        <div class="col col-sm-1 p-2 bg-info border "><strong>Học kỳ 2</strong></div>
+                        <div class="col col-sm-1 p-2 layout_title border text-white "><strong>STT</strong></div>
+                        <div class="col col-md-2 p-2 layout_title border text-white"><strong>Môn học</strong></div>
+                        <div class="col col-md-5 p-2 layout_title border text-white"><strong>Giáo viên</strong></div>
+                        <div class="col col-sm-2 p-2 layout_title border text-white"><strong>Áp dụng cả 2 học kỳ</strong></div>
+                        <div class="col col-sm-1 p-2 layout_title border text-white"><strong>Học kỳ 1</strong></div>
+                        <div class="col col-sm-1 p-2 layout_title border text-white"><strong>Học kỳ 2</strong></div>
                     </div>
                     {% for subject in subjects %}
                         <div class="row" id="{{ subject.id }}">

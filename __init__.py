@@ -2,7 +2,7 @@ from flask import Flask
 from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from flask_mail import Mail
 
 import cloudinary
 import cloudinary.api
@@ -20,6 +20,17 @@ app.config['PAGE_SIZE_REGULATIONS'] = 5 #1 trang 5 quy định
 app.config['PAGE_SIZE_LIST_CLASS'] = 5
 app.config['PAGE_SIZE_DETAIL_CLASS'] = 5
 app.config['PAGE_SIZE_VIEW_SCORE_SUBJECT'] = 8
+
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'theanhtran13012004@gmail.com'
+app.config['MAIL_PASSWORD'] = 'kmui vkff bpwd wyke'
+
+
+mail = Mail(app)
 
 babel = Babel(app)
 cloudinary.config(
