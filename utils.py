@@ -36,15 +36,3 @@ def display_form_errors(form):
         for error in errors:
             flash(f"Lỗi ở trường {field}: {error}", 'danger')  # Hiển thị lỗi lên giao diện
 
-# def on_model_change_user(model, form, is_created):
-#     if isinstance(model, User):
-#         if model.user_role == UserRole.TEACHER:
-#             teacher = Teacher(user_id=model.id)
-#             db.session.add(teacher)
-#         elif model.user_role == UserRole.ADMIN:
-#             admin = Admin(user_id=model.id)
-#             db.session.add(admin)
-#         elif model.user_role == UserRole.STAFF:
-#             staff = Staff(user_id=model.id)
-#             db.session.add(staff)
-#         db.session.commit()

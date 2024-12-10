@@ -1,4 +1,4 @@
-from app.models import Class, Subject, Semester, Teaching, User, UserRole
+from app.models import Class, Subject, Semester, Teaching, User, UserRole , Exam
 from app import db
 from datetime import date , datetime
 
@@ -72,11 +72,38 @@ def get_or_create(class_id, semester_id, teacher_subject_id):
         db.session.add(create_plan)
         db.session.commit()
         return create_plan, False
-
-
-
 def delete_assignments(class_id):
-    plans = Teaching.query.filter_by(class_id=class_id)
-    for plan in plans:
-        db.session.delete(plan)
+    try:
+        # Tìm các bài thi liên quan đến lớp học
+        exams = Exam.query.join(Teaching).filter(Teaching.class_id == class_id).all()
+
+        # Kiểm tra nếu không có bài thi nào, tránh việc cập nhật
+        if exams:
+            # Tìm phân công giảng dạy mặc định (hoặc phân công giảng dạy khác hợp lệ)
+            default_teach_plan = Teaching.query.first()  # Hoặc chọn phân công giảng dạy phù hợp
+
+            for exam in exams:
+                if default_teach_plan:
+                    exam.teach_plan_id = default_teach_plan.id  # Gán teach_plan_id hợp lệ
+                else:
+                    # Nếu không có phân công giảng dạy hợp lệ, tạo phân công mặc định hoặc xử lý tình huống này
+                    raise ValueError("Không có phân công giảng dạy hợp lệ để thay thế teach_plan_id.")
+
+                db.session.add(exam)
+
+        # Xóa các phân công giảng dạy
+        assignments_to_delete = Teaching.query.filter_by(class_id=class_id).all()
+        for assignment in assignments_to_delete:
+            db.session.delete(assignment)
+
+        # Commit các thay đổi
         db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        raise ValueError(f"Lỗi khi xóa phân công: ")
+
+
+
+
+

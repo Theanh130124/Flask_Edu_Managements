@@ -1,5 +1,3 @@
-
-
 from flask_login import logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import expose, BaseView, Admin
@@ -152,9 +150,6 @@ class ClassCreateView(AuthenticatedView):
     }
     can_edit = False
     can_view_details = True
-
-
-
 
 
 class NotificationView(AuthenticatedView):

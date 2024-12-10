@@ -122,26 +122,26 @@ def register():
 
                 # Kiểm tra độ tuổi
                 if age < min_age or age > max_age:
-                    flash(f"Độ tuổi phải từ {min_age} đến {max_age}!", "danger")
+                    flash(f"Độ tuổi học sinh phải từ {min_age} đến {max_age} theo quy định của nhà trường!", "danger")
                     return redirect(url_for("register"))
 
 
                 if dao_authen.check_email_exists(email):
-                    flash("Email đã tồn tại trong hệ thống!", "danger")
+                    flash("Email này đã tồn tại trong hệ thống!", "danger")
                     return redirect(url_for("register"))
 
                 if dao_authen.check_phone_exists(phone):
-                    flash("Số điện thoại đã tồn tại trong hệ thống!", "danger")
+                    flash("Số điện thoại này đã tồn tại trong hệ thống!", "danger")
                     return redirect(url_for("register"))
 
 
                 s = dao_student.create_student(form_student)
                 send_mail(subject="Thông báo nhập học ", student_name=s.profile.name, recipients=[s.profile.email])
-                flash("Tạo học sinh thành công!", "success")
+                flash("Đã tiếp nhận học sinh thành công!", "success")
                 return redirect(url_for("register"))
 
             except Exception as e:
-                flash(f"Đã xảy ra lỗi khi tạo học sinh: {e}", "danger")
+                flash(f"Đã xảy ra lỗi khi tiếp nhận học sinh: {e}", "danger")
                 return render_template("register_student.html", form_student=form_student)
 
         else:
@@ -347,7 +347,7 @@ def teacher_assignment_class(grade, classname):
             db.session.commit()
             flash("Phân công giảng dạy thành công!", "success")
         except Exception as e:
-            flash(f"Lỗi khi lưu phân công: ", "error")
+            flash(f"Lỗi khi lưu phân công:  ", "error")
         return redirect(f"/teacher/assignment/{grade}/{classname}")
 
     elif request.method == "POST" and request.form.get("type") == "delete":
@@ -355,7 +355,7 @@ def teacher_assignment_class(grade, classname):
             dao_assignment.delete_assignments(class_id)
             flash("Đã xóa phân công giảng dạy thành công!", "success")
         except Exception as e:
-            flash(f"Lỗi khi xóa phân công:", "error")
+            flash(f"Lỗi khi xóa phân công: ", "error")
         return redirect(f"/teacher/assignment/{grade}/{classname}")
 
     flash("Có lỗi xảy ra, vui lòng thử lại!", "error")

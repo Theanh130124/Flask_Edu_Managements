@@ -17,7 +17,6 @@ def add_student_to_class(class_id):
     db.session.commit()
     return jsonify({'status': 200})
 
-
 @app.route('/api/delete_student_from_class/<int:class_id>', methods=['DELETE'])
 def delete_student_from_class(class_id):
     list_student = request.json['list_student']
