@@ -4,8 +4,8 @@ from flask_admin import expose, BaseView, Admin
 from app.models import UserRole, Regulation, Subject, Teaching, Class, Profile, User, Student, Notification , Semester
 from app import app, db, login , utils
 from flask import redirect, request
-from app.controllers import hash_password
 from app.dao import  dao_subject ,dao_semester , dao_class
+import hashlib
 
 
 # De authen
@@ -112,6 +112,10 @@ class UserView(AuthenticatedView):
 
     # Hook sau
     def on_model_change(self, form, model, is_created):
+
+        def hash_password(password):
+            return str(hashlib.md5(password.encode('utf-8')).hexdigest())
+
         if is_created:
             model.password = hash_password(form.password.data)
         elif form.password.data:

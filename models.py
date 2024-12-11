@@ -61,9 +61,6 @@ class Profile(BaseModel):
     def __str__(self):
         return self.name
 
-    @property
-    def teacher_name(self):
-        return self.teacher.username if self.teacher else "Chưa có giáo viên"
 
 
 class User(UserMixin, BaseModel):
@@ -313,7 +310,7 @@ if __name__ == "__main__":
         # db.session.add_all([acc1,acc2,acc3,acc4,acc5,acc6,acc7,acc8])
         db.session.commit()
         regulations = [
-            Regulation(type=TYPE_REGULATION.RE_AGE, name="Tiếp nhận học sinh", min_value=16, max_value=20),
+            Regulation(type=TYPE_REGULATION.RE_AGE, name="Tiếp nhận học sinh", min_value=15, max_value=20),
             Regulation(type=TYPE_REGULATION.RE_AMOUNT,name="Sĩ số tối đa", min_value=0, max_value=40), ]
         for r in regulations:
             # db.session.add(r)

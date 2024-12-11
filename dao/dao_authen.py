@@ -1,14 +1,10 @@
 import hashlib
-
-
-
 from app.models import Profile, User
 from app import db, app
 from app.utils import upload_to_cloudinary
 from flask_login import current_user
 
 
-# User and Info
 def get_info_by_id(id):
     return Profile.query.get(id)
 

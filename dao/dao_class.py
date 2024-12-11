@@ -2,7 +2,7 @@ from app.models import Class, Students_Classes, User, UserRole , Student
 from app import db , utils , app
 from app.dao import  dao_student
 
-# outerjoin để hiện đc lớp chưa có gvcn
+# Outerjoin để lấy cả class chưa có GVCN
 def get_class(page =1):
     classes = (db.session.query(Class).outerjoin(User, Class.teacher_id == User.id)
                .filter(Class.year == utils.get_current_year()))
@@ -13,7 +13,7 @@ def get_class(page =1):
 
 def get_class_by_id(class_id):
     return  Class.query.get(class_id)
-# Kiểm tra xem có viết trùng tên cái dưới đc không
+
 def count_class_not_grade(grade=None):
     query = db.session.query(Class).join(User).filter(Class.year == utils.get_current_year())
     if grade is not None:
