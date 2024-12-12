@@ -2,73 +2,79 @@
 
 {% block body %}
     <div class="container mt-5 w-100">
-        <h1 class="mb-4 text-info">Thống kê môn học {{ subject_info.name }} khối {{ subject_info.grade.value }} </h1>
-        <h2 class="mb-4 text-info">Top 5 học sinh điểm cao nhất </h2>
+        <h3 class="mb-4 text-info">
+            Báo cáo tổng kết môn học: {{ subject_info.name }} - Khối: {{ subject_info.grade.value }}
+        </h3>
+        <span class="mb-4 text-info">
+            Năm học: {{ current_year }} - {{ current_year + 1 }}
+            ------- Kỳ học: {{ semester.semester_name }}
+        </span>
+
+        <!-- Bảng thống kê kết quả -->
         <table class="table table-hover">
             <thead>
-            <tr>
-                <th>Thứ hạng</th>
-                <th>Tên</th>
-                <th>Điểm trung bình</th>
-            </tr>
+                <tr>
+                    <th>STT</th>
+                    <th>Lớp</th>
+                    <th>Sĩ số</th>
+                    <th>Số lượng đạt</th>
+                    <th>Tỉ lệ</th>
+                </tr>
             </thead>
             <tbody>
-            {% for s in top_5_student %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ s[0] }}</td>
-                <td>{{ s[1] }}</td>
-            </tr>
-            {% endfor %}
+                {% for s in res_final %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ def_get_class(s[0]).name }}</td>
+                        <td>{{ s[1] }}</td>
+                        <td>{{ s[2] }}</td>
+                        <td>{{ (s[2]/s[1]*100)|round(2) }}%</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
-        <h2 class="mb-4 text-info">Theo điểm trung bình môn theo lớp </h2>
-        <div class="w-100" style="display: flex;justify-content: center">
+
+        <h2 class="mb-4 text-info">Theo điểm trung bình môn theo lớp</h2>
+        <div class="w-100" style="display: flex; justify-content: center">
             <canvas id="myChart"></canvas>
         </div>
-        <h2 class="mb-4 text-info">Số liệu chi tiết về xếp loại điểm của môn </h2>
-        <div class="w-100" style="display: flex;justify-content: center">
+
+        <h2 class="mb-4 text-info">Số liệu chi tiết về xếp loại điểm của môn</h2>
+        <div class="w-100" style="display: flex; justify-content: center">
             <canvas id="myChart1" class="w-50 h-50"></canvas>
         </div>
-    <h4 class="mb-4 text-info">Báo cáo tổng kết môn học :{{subject_info.name}} - Khối : {{ subject_info.grade.value }}</h4>
-        <span class="mb-4 text-info" >Năm học : {{current_year}} - {{current_year+1}} ------- {{semester.semester_name}}   </span>
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>STT</th>
-                <th>Lớp</th>
-                <th>Sĩ số</th>
-                <th>Số lượng đạt</th>
-                <th>Tỉ lệ</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for s in res_final %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ def_get_class(s[0]).name }}</td>
-                <td>{{ s[1] }}</td>
-                <td>{{ s[2] }}</td>
-                <td>{{ (s[2]/s[1]*100)|round(2) }}%</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+
+
+   <div class="mt-5  d-flex justify-content-end" style="width: 100%; padding: 20px; background-color: #eeeeee; border-radius: 8px;">
+    <button id="downloadReportExcel" class="btn btn-primary mr-5">
+        Tải Báo Cáo Excel
+    </button>
+</div>
+
     </div>
+    </div>
+
+    <!-- Thư viện Chart.js và SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <script>
-        console.log({{ num_of_classification }})
-        list_name_class = []
+
+        console.log({{ num_of_classification }});
+
+        let list_name_class = [];
         {% for class_id in list_class_id %}
-            list_name_class.push("{{ def_get_class(class_id).name }}")
+            list_name_class.push("{{ def_get_class(class_id).name }}");
         {% endfor %}
+
+
         const ctx = document.getElementById('myChart');
         new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: list_name_class,
                 datasets: [{
-                    label: 'điểm trung bình theo lớp',
+                    label: 'Điểm trung bình theo lớp',
                     data: {{ list_dtb }},
                     borderWidth: 1
                 }]
@@ -81,16 +87,13 @@
                 }
             }
         });
+
+
         const ctx1 = document.getElementById('myChart1');
         new Chart(ctx1, {
             type: 'doughnut',
             data: {
-                labels: [
-                    'Giỏi',
-                    'Khá',
-                    'Trung bình',
-                    'Yếu',
-                ],
+                labels: ['Giỏi', 'Khá', 'Trung bình', 'Yếu'],
                 datasets: [{
                     label: "Thống kê xếp loại",
                     data: {{ num_of_classification }},
@@ -105,5 +108,27 @@
                 }
             }
         });
+
+
+document.getElementById('downloadReportExcel').addEventListener('click', () => {
+    const ws_data = [
+
+        ["BÁO CÁO TỔNG KẾT MÔN HỌC"],
+         [` Môn : {{ subject_info.name }}   |  {{ semester.semester_name }}`],
+         [`Năm học: {{ current_year }} - {{ current_year + 1 }}`],
+        ["STT", "Lớp", "Sĩ số", "Số lượng đạt", "Tỉ lệ"],
+        {% for s in res_final %}
+            [{{ loop.index }}, "{{ def_get_class(s[0]).name }}", {{ s[1] }}, {{ s[2] }}, "{{ (s[2]/s[1]*100)|round(2) }}%"],
+        {% endfor %}
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Báo Cáo Thống Kê");
+
+
+    XLSX.writeFile(wb, "thong_ke_bao_cao.xlsx");
+});
+
     </script>
 {% endblock %}

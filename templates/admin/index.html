@@ -1,29 +1,40 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    <h1 class="text-center">Chào mừng tới trang quản trị</h1>
+    <div class="container mt-5">
+        <!-- Header Section -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary font-weight-bold animated fadeInUp">Chào mừng tới trang quản trị</h1>
 
-    {% if current_user.is_authenticated %}
-        <h1 class="text-success text-center">Chào mừng trở lại, {{ current_user.username }}</h1>
-    {% else %}
-        <h1 class="text-info mt-1 text-center">Đăng nhập người dùng</h1>
-        <form method="post" action="/login">
-            <div class="form-group mb-3 mt-3">
-                <label for="username">Tên đăng nhập</label>
-                <input required type="text" class="form-control" id="username" placeholder="Tên đăng nhập"
-                       name="username">
+            {% if current_user.is_authenticated %}
+                <h2 class="text-success animated fadeInUp">Chào mừng trở lại, {{ current_user.username }}</h2>
+            {% else %}
+                <h2 class="text-info animated fadeInUp">Đăng nhập người dùng</h2>
+            {% endif %}
+        </div>
+
+        <!-- Form Login (if not authenticated) -->
+        {% if not current_user.is_authenticated %}
+            <div class="card p-4 shadow-lg rounded-lg animated fadeInUp" style="background: #f8f9fa; border-radius: 20px;">
+                <form method="post" action="/login">
+                    <div class="form-group mb-3">
+                        <label for="username" class="font-weight-bold">Tên đăng nhập</label>
+                        <input required type="text" class="form-control form-control-lg border-info" id="username" placeholder="Tên đăng nhập"
+                               name="username">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password" class="font-weight-bold">Mật khẩu</label>
+                        <input required type="password" class="form-control form-control-lg border-info" id="password" placeholder="Mật khẩu"
+                               name="password">
+                    </div>
+
+                    <div class="form-group text-center">
+                        <button class="btn btn-success btn-lg btn-block" type="submit">Đăng nhập</button>
+                    </div>
+                </form>
             </div>
+        {% endif %}
 
-            <div class="form-group mt-3 mb-3">
-                <label for="password">Mật khẩu</label>
-                <input required type="password" class="form-control" id="password" placeholder="Mật khẩu"
-                       name="password">
-            </div>
-            <div class="form-group mt-3 mb-3">
-                <button class="btn btn-success" type="submit">Đăng nhập</button>
-            </div>
-        </form>
-    {% endif %}
-
-
+    </div>
 {% endblock %}

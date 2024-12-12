@@ -188,7 +188,6 @@ class StatInfoView(BaseView):
                            list_dtb=list_dtb,
                            def_get_class=dao_class.get_class_by_id,
                            num_of_classification=classification,
-                           top_5_student=dao_subject.top_5_highest_score_by_subject(request.args.get("semester"), request.args.get("subject")),
                            res_final=dao_subject.get_result_by_class(request.args.get("semester"), request.args.get("subject")))
 
     def is_visible(self):

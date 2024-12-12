@@ -49,4 +49,4 @@ app.add_url_rule("/teacher/assignment/<grade>/<string:classname>","teacher_assig
 
 
 if __name__ == '__main__':
-    app.run(debug=True)  # Lên pythonanywhere nhớ để Falsse
+    app.run(debug=False)  # Lên pythonanywhere nhớ để Falsse

@@ -5,10 +5,6 @@ from flask import flash
 
 from datetime import date
 
-
-
-# Nếu tháng 1-5: Học kỳ vẫn thuộc năm học trước (ví dụ: 2023-2024, thì đây vẫn là năm 2023).
-# Nếu tháng 6-12: Năm học mới đã bắt đầu (ví dụ: 2024-2025, thì đây là năm 2024).
 def get_current_year():
     if datetime.now().month < 6:
         return datetime.now().year - 1
