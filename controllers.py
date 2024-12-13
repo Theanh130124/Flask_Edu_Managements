@@ -9,8 +9,8 @@ from app.dao.dao_authen import display_profile_data, update_acc_info, auth_user
 from app.dao.dao_regulation import get_regulation_by_type
 from app.models import UserRole, TYPE_REGULATION  # Phải ghi là app.models để tránh lỗi profile
 from app.utils import get_current_semester
-from form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
-from decorators import role_only
+from app.form import AdmisionStudent, LoginForm, Info_Account, ChangeClass
+from app.decorators import role_only
 from datetime import datetime
 import cloudinary.uploader
 #Đưa api vào
