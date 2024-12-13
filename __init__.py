@@ -34,9 +34,10 @@ mail = Mail(app)
 
 babel = Babel(app)
 cloudinary.config(
-    cloud_name="dp9lw5n5g",
+   cloud_name="dp9lw5n5g",
     api_key="794682182282692",
-    api_secret="QKmsUnjc9uwBfY9VYb4dxoyWDcw"
+    api_secret="QKmsUnjc9uwBfY9VYb4dxoyWDcw",
+    api_proxy ='http://proxy.server:3128'
 )
 db = SQLAlchemy(app)
 login = LoginManager(app)
