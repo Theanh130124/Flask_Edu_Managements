@@ -152,7 +152,7 @@ class ClassCreateView(AuthenticatedView):
 
 
     }
-    can_edit = False
+    can_edit = True
     can_view_details = True
 
 
