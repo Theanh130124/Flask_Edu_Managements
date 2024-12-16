@@ -2,7 +2,7 @@ from app.models import Notification
 from app import app
 
 def load_all_notifications(page=1):
-    notifications = Notification.query
+    notifications = Notification.query.order_by(Notification.created_at.desc())
     page_size = app.config["PAGE_SIZE_NOTIFICATIONS"]
     start = (page -1) * page_size
     notifications = notifications.slice(start, start + page_size)
