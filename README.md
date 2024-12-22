@@ -1,4 +1,4 @@
-<h2>Bài tập lớn môn Công nghệ phần mềm</h2>
+![image](https://github.com/user-attachments/assets/36deb441-d166-4588-8e31-6611c0bf5bac)<h2>Bài tập lớn môn Công nghệ phần mềm</h2>
 
 <h3> Đề tài Quản lý học sinh </h3>
 
@@ -76,5 +76,26 @@ Liên hệ
 ```
 2251012005anh@ou.edu.vn
 theanhtran13012004@gmail.com
+
+```
+Hình ảnh website
+
+```
+![image](https://github.com/user-attachments/assets/c60785e2-0447-466f-8335-19982e8e1457)
+![image](https://github.com/user-attachments/assets/93929ea1-03ac-4f3d-8bbe-aa0b2ff94f3e)
+![image](https://github.com/user-attachments/assets/d0e4fad2-3d96-41ee-b1b6-3c2fb0b6d796)
+![image](https://github.com/user-attachments/assets/d049b59f-376d-4144-90d5-7f8f3dc44eec)
+![image](https://github.com/user-attachments/assets/dfb08cfb-b806-4e85-a27c-bb4d028f75b1)
+![image](https://github.com/user-attachments/assets/bdd7d210-0478-49cf-8369-450e78df7d29)
+![image](https://github.com/user-attachments/assets/21da56b3-c670-4baa-9f49-e092200d977b)
+![image](https://github.com/user-attachments/assets/14c51686-592e-404f-ba2f-5bba5518073a)
+![image](https://github.com/user-attachments/assets/2ce052b6-118c-42e0-aabf-a5d09d185fd8)
+
+
+
+
+
+
+
 
 
