@@ -3,7 +3,7 @@
 <h3> Đề tài Quản lý học sinh </h3>
 
 <h3>File báo cáo bài tập lớn </h3> 
-<span> "https://docs.google.com/document/d/1885E7ljA2knLS1qJ2ylLI5auqDugULiIgrSspaD6niw/edit?tab=t.0#heading=h.gjdgxs" > </span>
+<span> https://docs.google.com/document/d/1885E7ljA2knLS1qJ2ylLI5auqDugULiIgrSspaD6niw/edit?tab=t.0#heading=h.gjdgxs </span>
 
 <b><span>Requirements.txt</span>
 ```text
