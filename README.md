@@ -80,7 +80,7 @@ theanhtran13012004@gmail.com
 ```
 Hình ảnh website
 
-
+<h3>Trang của giáo viên và nhân viên</h3>
 
 
 ![image](https://github.com/user-attachments/assets/c60785e2-0447-466f-8335-19982e8e1457)
@@ -110,6 +110,33 @@ Hình ảnh website
 ![image](https://github.com/user-attachments/assets/2ce052b6-118c-42e0-aabf-a5d09d185fd8)
 
 
+
+<h3> Trang quản trị </h3>
+
+![image](https://github.com/user-attachments/assets/06243d40-6a27-4316-8fe3-ecfb46d44d69)
+
+
+![image](https://github.com/user-attachments/assets/47dcea4e-7a33-48d8-a1fe-6547f9856c7a)
+
+
+
+![image](https://github.com/user-attachments/assets/a67943da-f2ef-4d47-843a-d96721cc5362)
+
+
+
+![image](https://github.com/user-attachments/assets/66f1cadb-37c3-4470-99c3-431f669ea007)
+
+
+
+![image](https://github.com/user-attachments/assets/ed3d1c59-877c-4455-90e5-02db1aa85666)
+
+
+
+![image](https://github.com/user-attachments/assets/c223418f-c7c6-4c2e-8c9b-0ce440f86a8d)
+
+
+
+![image](https://github.com/user-attachments/assets/2dd47063-f7c6-486c-ae98-abe776be52d4)
 
 
 
