@@ -202,6 +202,7 @@ def view_score():
 def teacher_assignment():
     classname = ''
     if request.method == "POST":
+
         classname = request.form.get("class-list")
         grade_value = request.form.get("grade-list")
 
@@ -215,7 +216,7 @@ def teacher_assignment():
 
     return render_template("teacher_assignment.html", classname=classname)
 
-#Lấy class , gửi mail
+#Lấy class cho teaching , gửi mail
 @role_only([UserRole.STAFF])
 def get_class():
     q = request.args.get('q')
@@ -274,32 +275,36 @@ def teacher_assignment_class(grade, classname):
                 if not teacher_id:
                     continue  # Bỏ qua nếu không chọn giáo viên cho môn học
 
+                # Kiểm tra nếu giáo viên đã có môn học này chưa
                 teacher_subject = dao_assignment.get_id_teacher_subject(teacher_id=teacher_id, subject_id=s.id)
-                semester_id = None
-                if request.form.get(f"total-seme-{s.id}"):
-                    semester_id = "1,2"  # Cả 2 kỳ
-                elif request.form.get(f"seme1-{s.id}"):
-                    semester_id = "1"  # Kỳ 1
-                elif request.form.get(f"seme2-{s.id}"):
-                    semester_id = "2"  # Kỳ 2
+                semester_ids = []  # Danh sách các học kỳ sẽ tạo bản ghi
 
-                if teacher_subject is None:
-                    # Tạo mới nếu chưa có bản ghi
-                    new_teacher_subject = Teaching(
-                        teacher_id=teacher_id,
-                        subject_id=s.id,
-                        semester_id=semester_id,
-                        class_id=class_id
-                    )
-                    db.session.add(new_teacher_subject)
-                else:
-                    # Cập nhật nếu đã có bản ghi
-                    teacher_subject.semester_id = semester_id
+                if request.form.get(f"total-seme-{s.id}"):
+                    semester_ids = [1, 2]  # Cả 2 học kỳ
+                elif request.form.get(f"seme1-{s.id}"):
+                    semester_ids = [1]  # Chỉ học kỳ 1
+                elif request.form.get(f"seme2-{s.id}"):
+                    semester_ids = [2]  # Chỉ học kỳ 2
+
+                # Tạo bản ghi cho mỗi học kỳ
+                for semester_id in semester_ids:
+                    if teacher_subject is None:
+                        # Tạo mới nếu chưa có bản ghi
+                        new_teacher_subject = Teaching(
+                            teacher_id=teacher_id,
+                            subject_id=s.id,
+                            semester_id=semester_id,
+                            class_id=class_id
+                        )
+                        db.session.add(new_teacher_subject)
+                    else:
+                        # Nếu đã có bản ghi, chỉ cần cập nhật học kỳ
+                        teacher_subject.semester_id = semester_id
 
             db.session.commit()
             flash("Phân công giảng dạy thành công!", "success")
         except Exception as e:
-            flash(f"Lỗi khi lưu phân công:  ", "error")
+            flash(f"Lỗi khi lưu phân công:  {str(e)}", "error")
         return redirect(f"/teacher/assignment/{grade}/{classname}")
 
     elif request.method == "POST" and request.form.get("type") == "delete":
@@ -307,7 +312,7 @@ def teacher_assignment_class(grade, classname):
             dao_assignment.delete_assignments(class_id)
             flash("Đã xóa phân công giảng dạy thành công!", "success")
         except Exception as e:
-            flash(f"Lỗi khi xóa phân công: ", "error")
+            flash(f"Lỗi khi xóa phân công: {str(e)}", "error")
         return redirect(f"/teacher/assignment/{grade}/{classname}")
 
     flash("Có lỗi xảy ra, vui lòng thử lại!", "error")
