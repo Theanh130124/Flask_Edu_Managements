@@ -141,6 +141,14 @@ Hình ảnh website
 ![image](https://github.com/user-attachments/assets/2dd47063-f7c6-486c-ae98-abe776be52d4)
 
 
+<h1>Nếu là server trên pythonanywhere </h1> 
+Không hỗ trợ upload trên Cloudinary 
+
+- Cài thêm proxy
+- pip install python-decouple
+- Add thêm trong __init__
+  + from decouple import config
+  +  api_proxy = "http://proxy.server:3128"
 
 
 
