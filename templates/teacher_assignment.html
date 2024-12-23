@@ -204,9 +204,14 @@
             if ({{ p.semester_id }} === 1) {
                 seme1.checked = true;
                 check_semeter({{ p.subject_id }}, 'part');
-            } else {
+            } else if({{ p.semester_id }} === 2) {
                 seme2.checked = true;
                 check_semeter({{ p.subject_id }}, 'part');
+            }
+            else {
+            seme1.checked = true;
+            seme2.checked = true;
+             check_semeter({{ p.subject_id }}, 'part');
             }
         } else {
             console.error("Teacher option not found for subject id:", "{{ p.subject_id }}", "and teacher id:", "{{ p.teacher_id }}");
