@@ -17,6 +17,7 @@
             <th scope="col">ID</th>
             <th scope="col">Tên học sinh</th>
             <th scope="col">Ngày sinh</th>
+            <th scope="col">Địa chỉ</th>
             <th scope="col"></th>
         </tr>
         </thead>
@@ -26,6 +27,7 @@
                 <th  scope="row">{{ s.student.id }}</th>
                 <td>{{ s.student.profile.name }}</td>
                 <td>{{ s.student.profile.birthday.strftime("%d/%m/%Y") }}</td>
+                <td>{{ s.student.profile.address}}</td>
                 <td>
                     <button id="{{ s.student.id }}" class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>
                 </td>
@@ -136,7 +138,8 @@ function deleteRow(button) {
         newRow.insertCell(0).innerHTML = selectElement.value;
         newRow.insertCell(1).innerHTML = "{{ s.profile.name }}";
         newRow.insertCell(2).innerHTML = "{{ s.profile.birthday.strftime('%d/%m/%Y') }}";
-        newRow.insertCell(3).innerHTML = `<button class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>`;
+        newRow.insertCell(3).innerHTML = "{{ s.profile.address }}"
+        newRow.insertCell(4).innerHTML = `<button class="btn btn-danger" onclick="deleteRow(this)">Xóa</button>`;
         add.push(selectElement.value);
     }
     {% endfor %}
