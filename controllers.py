@@ -30,7 +30,7 @@ def index():
 
 
 # Nếu truyền url_for sẽ vào index -> truyền redirect thì vào router
-@login_required  # Có cái này để gom user vào -> home
+@login_required  #Ktra ĐN
 @role_only([UserRole.STAFF, UserRole.TEACHER])
 def home():
     page = request.args.get('page', 1 , type=int)
@@ -158,6 +158,9 @@ def class_edit():
 @login_required
 @role_only([UserRole.STAFF])
 def info_class(name, grade):
+    regulation_amount = get_regulation_by_type(TYPE_REGULATION.RE_AMOUNT)
+    max_amount = regulation_amount.max_value
+    min_amount = regulation_amount.min_value
     page = request.args.get('page', 1, type=int)
     students, class_info, total_students = dao_class.get_info_class_by_name(name, page=page)
     # print(total_students)
@@ -171,7 +174,9 @@ def info_class(name, grade):
         student_no_class=student_no_classes,
         current_page=page,
         total_pages=total_pages,
-        students=students
+        students=students,
+        max_amount=max_amount,
+        min_amount=min_amount
     )
 
 
@@ -179,7 +184,6 @@ def info_class(name, grade):
 @login_required
 @role_only([UserRole.TEACHER])
 def input_grade():
-
     teaching = dao_teacher.get_teaching_of_teacher(current_user.id)
     return render_template("input_score.html", teaching = teaching )
 
@@ -191,10 +195,6 @@ def input_grade_subject(teach_plan_id):
     teach_plan = dao_teacher.get_teaching_by_id(teach_plan_id)
     current_year = utils.get_current_year()
     return render_template("input_score_subject.html", can_edit=dao_teacher.can_edit_exam, get_score=dao_teacher.get_score_by_student_id,teach_plan=teach_plan, current_year=current_year)
-
-def view_score():
-    semester = dao_semester.get_all_semester()
-    return  render_template("view_score.html", semester=semester)
 
 #Phan cong Teaching
 @login_required
