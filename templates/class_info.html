@@ -93,6 +93,8 @@
     <script>
         add = []
         del = []
+    let maxAmount = {{ max_amount }};
+    let minAmount = {{ min_amount }};
 
     function showChangeAlert() {
     document.getElementById("change-alert").classList.remove("d-none");
@@ -108,7 +110,30 @@
             }
      }
         document.getElementById("amount").innerHTML = "Sĩ số: " + count.toString();
+                // Kiểm tra trạng thái thêm/xóa
+        let addButton = document.querySelector("button.btn-success");
+        let deleteButtons = document.querySelectorAll("button.btn-danger");
+        if (count >= maxAmount) {
+            addButton.disabled = true;
+            addButton.title = "Không thể thêm, đã đạt sĩ số tối đa!";
+        } else {
+            addButton.disabled = false;
+            addButton.title = "";
         }
+
+        if (count <= minAmount) {
+            deleteButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.title = "Không thể xóa, sĩ số đã đạt mức tối thiểu!";
+            });
+        } else {
+            deleteButtons.forEach(btn => {
+                btn.disabled = false;
+                btn.title = "";
+            });
+        }
+    }
+
 
 
 function deleteRow(button) {
